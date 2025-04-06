@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAppContext, MotionDiv, fadeIn, slideUp, MotionH1 } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { GiWashingMachine } from 'react-icons/gi';
-import { FaSignInAlt, FaSignOutAlt, FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
+import { FaSignInAlt, FaUser, FaLock, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 const Auth = () => {
@@ -11,52 +12,17 @@ const Auth = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         password: '',
         confirmPassword: ''
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     
-    const { login, register, isRTL } = useAppContext();
+    const { user } = useAppContext();
+    const { signIn, signUp } = useAuth();
     const navigate = useNavigate();
     const { t } = useTranslation();
-
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
-    
-        try {
-            if (isLogin) {
-                await login(formData.email, formData.password);
-                navigate('/dashboard');
-            } else {
-                if (formData.password !== formData.confirmPassword) {
-                    throw new Error(t('auth.passwordsNotMatch'));
-                }
-                await register(formData.name, formData.email, formData.password);
-                navigate('/dashboard');
-            }
-        } catch (err) {
-            setError(err.message);
-            if (!isLogin) {
-                setFormData({
-                    ...formData,
-                    password: '',
-                    confirmPassword: ''
-                });
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
 
     // Animation variants
     const formItemVariants = {
@@ -79,6 +45,86 @@ const Auth = () => {
             transition: { duration: 0.2 }
         },
         tap: { scale: 0.98 }
+    };
+
+    // Redirect if user is already logged in
+    useEffect(() => {
+        if (user) {
+            navigate('/');
+        }
+    }, [user, navigate]);
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+    
+        try {
+            if (isLogin) {
+                await signIn(formData.email, formData.password);
+            } else {
+                if (formData.password !== formData.confirmPassword) {
+                    throw new Error(t('auth.passwordsNotMatch'));
+                }
+                if (formData.password.length < 8) {
+                    throw new Error(t('auth.passwordTooShort'));
+                }
+                if (!formData.name.trim()) {
+                    throw new Error(t('auth.nameRequired'));
+                }
+                if (!formData.phone.trim()) {
+                    throw new Error(t('auth.phoneRequired'));
+                }
+                
+                const cleanEmail = formData.email.trim().toLowerCase();
+                console.log(  cleanEmail, 
+                    formData.password, 
+                    { 
+                        name: formData.name.trim(),
+                        phone: formData.phone.trim()
+                    });
+                await signUp(
+                    cleanEmail, 
+                    formData.password, 
+                    { 
+                        name: formData.name.trim(),
+                        phone: formData.phone.trim()
+                    }
+                );
+            }
+        } catch (err) {
+            console.error('Authentication error:', err);
+            let errorMessage = err.message;
+            
+            if (err.message.includes('credentials')) {
+                errorMessage = t('auth.invalidCredentials');
+            } else if (err.message.includes('already exists')) {
+                errorMessage = t('auth.userExists');
+            } else if (err.message.includes('Email not confirmed')) {
+                errorMessage = t('auth.emailNotVerified');
+            } else if (err.message.includes('valid email')) {
+                errorMessage = t('auth.invalidEmail');
+            }
+            
+            setError(errorMessage);
+            
+            if (!isLogin) {
+                setFormData(prev => ({
+                    ...prev,
+                    password: '',
+                    confirmPassword: ''
+                }));
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -151,31 +197,59 @@ const Auth = () => {
 
                     <form className="space-y-5" onSubmit={handleSubmit}>
                         {!isLogin && (
-                            <motion.div
-                                variants={formItemVariants}
-                                initial="hidden"
-                                animate="visible"
-                                transition={{ delay: 0.4 }}
-                            >
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                                    {t('auth.fullName')}
-                                </label>
-                                <div className="relative rounded-md shadow-sm">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <FaUser className="h-5 w-5 text-gray-400" />
+                            <>
+                                <motion.div
+                                    variants={formItemVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    transition={{ delay: 0.4 }}
+                                >
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                                        {t('auth.fullName')}
+                                    </label>
+                                    <div className="relative rounded-md shadow-sm">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <FaUser className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <input
+                                            id="name"
+                                            name="name"
+                                            type="text"
+                                            required
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md shadow-sm placeholder-gray-400 sm:text-sm"
+                                            placeholder={t('auth.fullNamePlaceholder')}
+                                        />
                                     </div>
-                                    <input
-                                        id="name"
-                                        name="name"
-                                        type="text"
-                                        required
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md shadow-sm placeholder-gray-400 sm:text-sm"
-                                        placeholder={t('auth.fullNamePlaceholder')}
-                                    />
-                                </div>
-                            </motion.div>
+                                </motion.div>
+
+                                <motion.div
+                                    variants={formItemVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    transition={{ delay: 0.45 }}
+                                >
+                                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                                        {t('auth.phoneNumber')}
+                                    </label>
+                                    <div className="relative rounded-md shadow-sm">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <FaPhone className="h-5 w-5 text-gray-400" />
+                                        </div>
+                                        <input
+                                            id="phone"
+                                            name="phone"
+                                            type="tel"
+                                            required
+                                            value={formData.phone}
+                                            onChange={handleChange}
+                                            className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md shadow-sm placeholder-gray-400 sm:text-sm"
+                                            placeholder={t('auth.phonePlaceholder')}
+                                        />
+                                    </div>
+                                </motion.div>
+                            </>
                         )}
 
                         <motion.div
@@ -222,15 +296,20 @@ const Auth = () => {
                                     id="password"
                                     name="password"
                                     type="password"
-                                    autoComplete="current-password"
+                                    autoComplete={isLogin ? "current-password" : "new-password"}
                                     required
                                     minLength="8"
                                     value={formData.password}
                                     onChange={handleChange}
                                     className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md shadow-sm placeholder-gray-400 sm:text-sm"
-                                    placeholder={t('auth.passwordPlaceholder')}
+                                    placeholder={isLogin ? t('auth.passwordPlaceholder') : t('auth.newPasswordPlaceholder')}
                                 />
                             </div>
+                            {!isLogin && (
+                                <p className="mt-1 text-xs text-gray-500">
+                                    {t('auth.passwordRequirements')}
+                                </p>
+                            )}
                         </motion.div>
 
                         {!isLogin && (
@@ -251,6 +330,7 @@ const Auth = () => {
                                         id="confirmPassword"
                                         name="confirmPassword"
                                         type="password"
+                                        autoComplete="new-password"
                                         required
                                         minLength="8"
                                         value={formData.confirmPassword}
@@ -262,36 +342,36 @@ const Auth = () => {
                             </motion.div>
                         )}
 
-                        <motion.div 
-                            className="flex items-center justify-between"
-                            variants={formItemVariants}
-                            initial="hidden"
-                            animate="visible"
-                            transition={{ delay: isLogin ? 0.6 : 0.8 }}
-                        >
-                            <div className="flex items-center">
-                                <input
-                                    id="remember-me"
-                                    name="remember-me"
-                                    type="checkbox"
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                />
-                                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                                    {t('auth.rememberMe')}
-                                </label>
-                            </div>
+                        {isLogin && (
+                            <motion.div 
+                                className="flex items-center justify-between"
+                                variants={formItemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                transition={{ delay: 0.6 }}
+                            >
+                                <div className="flex items-center">
+                                    <input
+                                        id="remember-me"
+                                        name="remember-me"
+                                        type="checkbox"
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                    <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                                        {t('auth.rememberMe')}
+                                    </label>
+                                </div>
 
-                            {isLogin && (
                                 <div className="text-sm">
                                     <Link 
-                                        to="#" 
+                                        to="/forgot-password" 
                                         className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
                                     >
                                         {t('auth.forgotPassword')}
                                     </Link>
                                 </div>
-                            )}
-                        </motion.div>
+                            </motion.div>
+                        )}
 
                         <motion.div
                             variants={formItemVariants}
@@ -357,7 +437,10 @@ const Auth = () => {
                             whileTap="tap"
                         >
                             <button
-                                onClick={() => setIsLogin(!isLogin)}
+                                onClick={() => {
+                                    setIsLogin(!isLogin);
+                                    setError('');
+                                }}
                                 className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
                             >
                                 {isLogin ? t('auth.needAccount') : t('auth.haveAccount')}

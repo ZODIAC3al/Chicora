@@ -258,7 +258,7 @@ i18n.use(initReactI18next).init({
 
         // Footer
         footer: {
-          copyright: "DryClean Service",
+          copyright: "Ali Maher",
           rightsReserved: "All rights reserved",
           about: "About Us",
           contact: "Contact",
@@ -686,7 +686,7 @@ i18n.use(initReactI18next).init({
           saturday: "السبت",
           sunday: "الأحد",
           closed: "مغلق",
-          copyright: "خدمة التنظيف الجاف",
+          copyright: "علي ماهر",
           rightsReserved: "جميع الحقوق محفوظة",
           privacy: "سياسة الخصوصية",
           terms: "شروط الخدمة",

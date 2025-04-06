@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useAppContext, MotionDiv } from '../../context/AppContext';
-import { fadeIn } from '../../context/AppContext';
+import { useAppContext, MotionDiv, fadeIn } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,18 +10,36 @@ import { RiAdminFill } from 'react-icons/ri';
 import { BsFillGearFill } from 'react-icons/bs';
 
 const Navbar = () => {
-    const { user, logout, currentLanguage, changeLanguage, isRTL } = useAppContext();
+    // Context hooks
+    const { 
+        currentLanguage, 
+        changeLanguage, 
+        isRTL,
+        loading: appLoading 
+    } = useAppContext();
+    const { 
+        user, 
+        signOut, 
+        loading: authLoading 
+    } = useAuth();
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+    // Local state
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [logoutLoading, setLogoutLoading] = useState(false);
+
+    // Handlers
     const handleLogout = async () => {
         try {
-            await logout();
+            setLogoutLoading(true);
+            await signOut();
             navigate('/');
             setMobileMenuOpen(false);
         } catch (error) {
             console.error('Logout failed:', error);
+        } finally {
+            setLogoutLoading(false);
         }
     };
 
@@ -60,31 +78,25 @@ const Navbar = () => {
                 damping: 10
             }
         },
-        hover: {
-            scale: 1.05,
-            transition: { duration: 0.3 }
-        }
+        hover: { scale: 1.05 }
     };
 
     const mobileMenuVariants = {
         hidden: { opacity: 0, height: 0 },
-        visible: {
-            opacity: 1,
+        visible: { 
+            opacity: 1, 
             height: 'auto',
-            transition: {
-                duration: 0.3,
-                ease: 'easeInOut'
-            }
+            transition: { duration: 0.3, ease: 'easeInOut' }
         },
-        exit: {
-            opacity: 0,
+        exit: { 
+            opacity: 0, 
             height: 0,
-            transition: {
-                duration: 0.2,
-                ease: 'easeInOut'
-            }
+            transition: { duration: 0.2, ease: 'easeInOut' }
         }
     };
+
+    // Don't render during initial loading
+    if (appLoading || authLoading) return null;
 
     return (
         <MotionDiv 
@@ -92,15 +104,15 @@ const Navbar = () => {
             animate="visible"
             variants={fadeIn}
             className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg sticky top-0 z-50"
+            dir={isRTL ? 'rtl' : 'ltr'}
         >
             <div className="container mx-auto px-4 py-3">
+                {/* Main Navigation Bar */}
                 <motion.div 
                     className="flex justify-between items-center"
                     variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
                 >
-                    {/* Animated Logo */}
+                    {/* Logo/Brand */}
                     <motion.div
                         variants={logoVariants}
                         whileHover="hover"
@@ -108,25 +120,23 @@ const Navbar = () => {
                     >
                         <Link to="/" className="flex items-center space-x-2">
                             <div className="relative">
-                                <div className="absolute -inset-1 bg-white rounded-full blur opacity-75 animate-pulse"></div>
+                                <div className="absolute -inset-1 bg-white rounded-full blur opacity-75 animate-pulse" />
                                 <div className="relative flex items-center justify-center h-10 w-10 bg-blue-500 rounded-full shadow-lg">
                                     <GiWashingMachine className="text-white text-xl" />
                                 </div>
                             </div>
-                            <motion.span 
-                                className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100"
-                                whileHover={{ scale: 1.05 }}
-                            >
-                                Chicora Pro
+                            <motion.span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100">
+                                DryClean Pro
                             </motion.span>
                         </Link>
                     </motion.div>
 
-                    {/* Desktop Navigation */}
+                    {/* Desktop Navigation Links */}
                     <motion.div 
                         className="hidden md:flex items-center space-x-6"
                         variants={containerVariants}
                     >
+                        {/* Services Link */}
                         <motion.div variants={itemVariants}>
                             <Link 
                                 to="/services" 
@@ -137,11 +147,12 @@ const Navbar = () => {
                             </Link>
                         </motion.div>
                         
+                        {/* Client-specific Links */}
                         {user?.role === 'client' && (
                             <>
                                 <motion.div variants={itemVariants}>
                                     <Link 
-                                        to="/order" 
+                                        to="/orders/new" 
                                         className="hover:text-blue-200 transition flex items-center space-x-1"
                                     >
                                         <FaUser className="text-blue-200" />
@@ -150,7 +161,7 @@ const Navbar = () => {
                                 </motion.div>
                                 <motion.div variants={itemVariants}>
                                     <Link 
-                                        to="/history" 
+                                        to="/orders" 
                                         className="hover:text-blue-200 transition flex items-center space-x-1"
                                     >
                                         <FaUser className="text-blue-200" />
@@ -160,6 +171,7 @@ const Navbar = () => {
                             </>
                         )}
                         
+                        {/* Admin Dashboard Link */}
                         {user?.role === 'admin' && (
                             <motion.div variants={itemVariants}>
                                 <Link 
@@ -191,14 +203,30 @@ const Navbar = () => {
                             </button>
                         </motion.div>
                         
+                        {/* Auth Buttons */}
                         {user ? (
                             <motion.div variants={itemVariants}>
                                 <button 
                                     onClick={handleLogout}
-                                    className="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 transition flex items-center space-x-2"
+                                    disabled={logoutLoading}
+                                    className="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 transition flex items-center space-x-2 disabled:opacity-70"
                                 >
-                                    <FaSignOutAlt />
-                                    <span>{t('navbar.logout')}</span>
+                                    {logoutLoading ? (
+                                        <svg 
+                                            className="animate-spin h-5 w-5" 
+                                            xmlns="http://www.w3.org/2000/svg" 
+                                            fill="none" 
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                        </svg>
+                                    ) : (
+                                        <>
+                                            <FaSignOutAlt />
+                                            <span>{t('navbar.logout')}</span>
+                                        </>
+                                    )}
                                 </button>
                             </motion.div>
                         ) : (
@@ -214,7 +242,7 @@ const Navbar = () => {
                         )}
                     </motion.div>
 
-                    {/* Mobile menu button */}
+                    {/* Mobile Menu Toggle Button */}
                     <motion.div 
                         variants={itemVariants}
                         className="md:hidden"
@@ -222,6 +250,7 @@ const Navbar = () => {
                         <button 
                             className="text-white focus:outline-none"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
                         >
                             {mobileMenuOpen ? (
                                 <FaTimes className="w-6 h-6" />
@@ -232,7 +261,7 @@ const Navbar = () => {
                     </motion.div>
                 </motion.div>
 
-                {/* Mobile Navigation */}
+                {/* Mobile Menu */}
                 <AnimatePresence>
                     {mobileMenuOpen && (
                         <motion.div 
@@ -243,6 +272,7 @@ const Navbar = () => {
                             className="md:hidden overflow-hidden"
                         >
                             <div className="pt-2 pb-4 space-y-3">
+                                {/* Services Link */}
                                 <motion.div 
                                     className="px-2"
                                     initial={{ opacity: 0 }}
@@ -259,6 +289,7 @@ const Navbar = () => {
                                     </Link>
                                 </motion.div>
                                 
+                                {/* Client-specific Links */}
                                 {user?.role === 'client' && (
                                     <>
                                         <motion.div 
@@ -268,7 +299,7 @@ const Navbar = () => {
                                             transition={{ delay: 0.2 }}
                                         >
                                             <Link 
-                                                to="/order" 
+                                                to="/orders/new" 
                                                 className="block px-3 py-2 rounded-md hover:bg-blue-500 transition flex items-center space-x-2"
                                                 onClick={() => setMobileMenuOpen(false)}
                                             >
@@ -283,7 +314,7 @@ const Navbar = () => {
                                             transition={{ delay: 0.3 }}
                                         >
                                             <Link 
-                                                to="/history" 
+                                                to="/orders" 
                                                 className="block px-3 py-2 rounded-md hover:bg-blue-500 transition flex items-center space-x-2"
                                                 onClick={() => setMobileMenuOpen(false)}
                                             >
@@ -291,24 +322,10 @@ const Navbar = () => {
                                                 <span>{t('navbar.orderHistory')}</span>
                                             </Link>
                                         </motion.div>
-                                         <motion.div 
-                                            className="px-2"
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            transition={{ delay: 0.3 }}
-                                        >
-                                            <Link 
-                                                to="/about" 
-                                                className="block px-3 py-2 rounded-md hover:bg-blue-500 transition flex items-center space-x-2"
-                                                onClick={() => setMobileMenuOpen(false)}
-                                            >
-                                                <FaUser />
-                                                <span>{t('navbar.about')}</span>
-                                            </Link>
-                                        </motion.div>
                                     </>
                                 )}
                                 
+                                {/* Admin Dashboard Link */}
                                 {user?.role === 'admin' && (
                                     <motion.div 
                                         className="px-2"
@@ -327,6 +344,7 @@ const Navbar = () => {
                                     </motion.div>
                                 )}
 
+                                {/* Language Switcher */}
                                 <motion.div 
                                     className="px-2 pt-2"
                                     initial={{ opacity: 0 }}
@@ -355,6 +373,7 @@ const Navbar = () => {
                                     </div>
                                 </motion.div>
                                 
+                                {/* Auth Buttons */}
                                 <motion.div 
                                     className="px-2"
                                     initial={{ opacity: 0 }}
@@ -364,10 +383,25 @@ const Navbar = () => {
                                     {user ? (
                                         <button 
                                             onClick={handleLogout}
+                                            disabled={logoutLoading}
                                             className="w-full px-3 py-2 rounded-md bg-white text-blue-600 hover:bg-blue-50 transition flex items-center justify-center space-x-2"
                                         >
-                                            <FaSignOutAlt />
-                                            <span>{t('navbar.logout')}</span>
+                                            {logoutLoading ? (
+                                                <svg 
+                                                    className="animate-spin h-5 w-5" 
+                                                    xmlns="http://www.w3.org/2000/svg" 
+                                                    fill="none" 
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                </svg>
+                                            ) : (
+                                                <>
+                                                    <FaSignOutAlt />
+                                                    <span>{t('navbar.logout')}</span>
+                                                </>
+                                            )}
                                         </button>
                                     ) : (
                                         <Link 

@@ -4,8 +4,10 @@ import {
   Route,
   Navigate,
   Outlet,
+  useLocation,
 } from "react-router-dom";
-import { AppProvider } from "./context/AppContext";
+import { AppProvider, useAppContext } from "./context/AppContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/Shared/Navbar";
 import Loading from "./components/Shared/Loading";
 import Auth from "./components/Shared/Auth";
@@ -16,60 +18,98 @@ import Dashboard from "./components/Admin/Dashboard";
 import Orders from "./components/Admin/Orders";
 import Home from "./components/Client/Home";
 import Footer from "./components/Shared/Footer";
-import AboutPage from "./components/Shared/AboutPage.JSX";
+import AboutPage from "./components/Shared/AboutPage";
 import ContactPage from "./components/Shared/ContactPage ";
 import PricingPage from "./components/Shared/PricingPage";
 
-const App = () => {
-  return (
-    <Router>
-      <AppProvider>
-        <div className="min-h-screen flex flex-col">
-          <Navbar />
+// Enhanced ProtectedRoute with AuthContext
+const ProtectedRoute = ({ children, roles = [] }) => {
+  const { user: contextUser, loading: contextLoading } = useAppContext();
+  const { user: authUser, profile, loading: authLoading } = useAuth();
+  const location = useLocation();
 
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/services" element={<Services />} />
+  const loading = contextLoading || authLoading;
+  const user = authUser || contextUser;
 
-              <Route path="/order" element={<OrderForm />} />
-              <Route path="/history" element={<OrderHistory />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/pricing" element={<PricingPage />} />
+  if (loading) {
+    return <Loading />;
+  }
 
-              <Route path="/admin" element={<Dashboard />} />
-              <Route path="/admin/orders" element={<Orders />} />
+  if (!user) {
+    return <Navigate to="/auth" replace state={{ from: location }} />;
+  }
 
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </main>
+  // Check role-based access if roles are specified
+  if (roles.length > 0) {
+    const userRole = profile?.role || contextUser?.role;
+    if (!roles.includes(userRole)) {
+      return <Navigate to="/" replace />;
+    }
+  }
 
-          <Footer />
-        </div>
-      </AppProvider>
-    </Router>
-  );
+  return children ? children : <Outlet />;
 };
 
-// Enhanced ProtectedRoute component
-// const ProtectedRoute = ({ role }) => {
-//   const { user, loading } = useAppContext();
+// PublicOnlyRoute component for non-authenticated users
+const PublicOnlyRoute = ({ children }) => {
+  const { user: contextUser, loading: contextLoading } = useAppContext();
+  const { user: authUser, loading: authLoading } = useAuth();
+  const location = useLocation();
 
-//   if (loading) {
-//     return <Loading />;
-//   }
+  const loading = contextLoading || authLoading;
+  const user = authUser || contextUser;
 
-//   if (!user) {
-//     return <Navigate to="/auth" replace state={{ from: location }} />;
-//   }
+  if (loading) {
+    return <Loading />;
+  }
 
-//   if (role && user.role !== role) {
-//     return <Navigate to="/" replace />;
-//   }
+  if (user) {
+    const from = location.state?.from?.pathname || "/";
+    return <Navigate to={from} replace />;
+  }
 
-//   return <Outlet />;
-// };
+  return children ? children : <Outlet />;
+};
+
+const App = () => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+
+      <main className="flex-grow">
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/services" element={<Services />} />
+
+          {/* Auth routes (public only) */}
+          <Route element={<PublicOnlyRoute />}>
+            <Route path="/auth" element={<Auth />} />
+          </Route>
+
+          {/* Protected client routes */}
+          <Route element={<ProtectedRoute roles={["client"]} />}>
+            <Route path="/order" element={<OrderForm />} />
+            <Route path="/history" element={<OrderHistory />} />
+          </Route>
+
+          {/* Admin-only routes */}
+          <Route element={<ProtectedRoute roles={["admin"]} />}>
+            <Route path="/admin" element={<Dashboard />} />
+            <Route path="/admin/orders" element={<Orders />} />
+          </Route>
+
+          {/* Catch-all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
 
 export default App;

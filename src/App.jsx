@@ -14,13 +14,15 @@ import Auth from "./components/Shared/Auth";
 import Services from "./components/Client/Services";
 import OrderForm from "./components/Client/OrderForm";
 import OrderHistory from "./components/Client/OrderHistory";
-import Dashboard from "./components/Admin/Dashboard";
+
 import Orders from "./components/Admin/Orders";
+import Dashboard from "./components/Admin/Dashboard";
 import Home from "./components/Client/Home";
 import Footer from "./components/Shared/Footer";
 import AboutPage from "./components/Shared/AboutPage";
 import ContactPage from "./components/Shared/ContactPage ";
 import PricingPage from "./components/Shared/PricingPage";
+import ProfilePage from "./components/Client/ProfilePage";
 
 // Enhanced ProtectedRoute with AuthContext
 const ProtectedRoute = ({ children, roles = [] }) => {
@@ -94,6 +96,7 @@ const App = () => {
           <Route element={<ProtectedRoute roles={["client"]} />}>
             <Route path="/order" element={<OrderForm />} />
             <Route path="/history" element={<OrderHistory />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
 
           {/* Admin-only routes */}

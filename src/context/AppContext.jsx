@@ -79,30 +79,32 @@ export const AppProvider = ({ children }) => {
       setLoading(false);
     }
   };
-
-  const createOrder = async (serviceId, details) => {
+  const createOrder = async (orderData) => {
     try {
-      if (!user) throw new Error("You must be logged in to create an order");
+        if (!user) throw new Error("You must be logged in to create an order");
 
-      setLoading(true);
-      const { order, error } = await createSupabaseOrder({
-        user_id: user.id,
-        service_id: serviceId,
-        details,
-        status: 'pending'
-      });
-      if (error) throw error;
+        setLoading(true);
+        const { data, error } = await supabase
+            .from('orders')
+            .insert([{
+                service_id: orderData.service_id,
+                user_id: orderData.user_id, // Ensure user_id is included
+                status: orderData.status,
+                details: orderData.details
+            }])
+            .select()
+            .single();
 
-      await fetchOrders();
-      return order;
+        if (error) throw error;
+        await fetchOrders();
+        return data;
     } catch (error) {
-      console.error("Failed to create order:", error);
-      throw error;
+        console.error("Failed to create order:", error);
+        throw error;
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
-
+};
   const fetchOrders = async () => {
     try {
       if (!user) return;

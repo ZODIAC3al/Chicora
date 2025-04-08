@@ -118,7 +118,8 @@ i18n.use(initReactI18next).init({
           logout: "Logout",
           profile: "Profile",
           language: "Language",
-        },   pricing: {
+        },
+           pricing: {
           title: "Simple, Transparent Pricing",
           subtitle: "Choose the perfect plan for your laundry needs. No hidden fees, no surprises.",
           perMonth: "month",
@@ -254,7 +255,194 @@ i18n.use(initReactI18next).init({
           revenue: "Revenue ($)",
           recentOrders: "Recent Orders",
           viewAll: "View All",
+        }, 
+         users: {
+          title: "User Management",
+          allUsers: "All Users",
+          activeUsers: "Active Users",
+          inactiveUsers: "Inactive Users",
+          search: "Search Users",
+          userId: "User ID",
+          name: "Name",
+          email: "Email",
+          role: "Role",
+          status: "Status",
+          lastLogin: "Last Login",
+          actions: "Actions",
+          createUser: "Create User",
+          editUser: "Edit User",
+          deleteUser: "Delete User",
+          deleteConfirm: "Are you sure you want to delete this user?",
+          roles: {
+            admin: "Admin",
+            employee: "Employee",
+            client: "Client"
+          },
+          statuses: {
+            active: "Active",
+            inactive: "Inactive"
+          }
         },
+        settings: {
+          title: "Settings",
+          general: "General Settings",
+          services: "Service Management",  pricing: "Pricing Settings",
+          notifications: "Notification Settings",
+          businessHours: "Business Hours",
+          deliverySettings: "Delivery Settings",
+          saveChanges: "Save Changes",
+          resetDefaults: "Reset to Defaults",
+        },
+        reports: {
+          title: "Reports",
+          sales: "Sales Reports",
+          customers: "Customer Reports",
+          inventory: "Inventory Reports",
+          financial: "Financial Reports",
+          export: "Export Report",
+          generate: "Generate Report",
+          dateRange: "Date Range",
+          filter: "Filter",
+        }
+      ,
+
+      // Employee Dashboard
+      employee: {
+        dashboard: {
+          title: "Employee Dashboard",
+          assignedTasks: "Assigned Tasks",
+          completedTasks: "Completed Tasks",
+          pendingApproval: "Pending Approval",
+          performance: "Performance Metrics",
+          efficiency: "Efficiency Rating",
+          attendance: "Attendance Record",
+          upcoming: "Upcoming Schedule",
+          recentActivity: "Recent Activity",
+        },
+        orders: {
+          process: "Process Order",
+          updateStatus: "Update Status",
+          addNotes: "Add Notes",
+          viewDetails: "View Details",
+          priority: "Priority",
+          high: "High",
+          medium: "Medium",
+          low: "Low",
+        },
+        tasks: {
+          title: "Task Management",
+          new: "New Tasks",
+          inProgress: "In Progress",
+          completed: "Completed",
+          overdue: "Overdue",
+          dueToday: "Due Today",
+          markComplete: "Mark Complete",
+        }
+      },
+
+      // Client Portal
+      client: {
+        dashboard: {
+          title: "My Account",
+          recentOrders: "Recent Orders",
+          loyaltyPoints: "Loyalty Points",
+          preferences: "Preferences",
+          addressBook: "Address Book",
+          paymentMethods: "Payment Methods",
+          notifications: "Notifications",
+          referrals: "Referral Program",
+        },
+        loyalty: {
+          points: "Loyalty Points",
+          rewards: "Available Rewards",
+          history: "Points History",
+          redeem: "Redeem Reward",
+          tier: "Membership Tier",
+          silver: "Silver",
+          gold: "Gold",
+          platinum: "Platinum",
+        }
+      },
+
+      // Calendar
+      calendar: {
+        title: "Calendar",
+        today: "Today",
+        week: "Week",
+        month: "Month",
+        year: "Year",
+        agenda: "Agenda",
+        noEvents: "No events scheduled",
+        addEvent: "Add Event",
+        eventDetails: "Event Details",
+        allDay: "All Day",
+        description: "Description",
+        location: "Location",
+        repeat: "Repeat",
+        never: "Never",
+        daily: "Daily",
+        weekly: "Weekly",
+        monthly: "Monthly",
+        yearly: "Yearly",
+      },
+
+      // File Upload
+      fileUpload: {
+        title: "Upload Files",
+        browse: "Browse Files",
+        dragDrop: "Drag & Drop Files Here",
+        maxSize: "Max file size: {{size}}MB",
+        supportedFormats: "Supported formats: {{formats}}",
+        uploadSuccess: "Upload successful",
+        uploadFailed: "Upload failed",
+        remove: "Remove",
+        preview: "Preview",
+      },
+
+      // Data Tables
+      dataTable: {
+        rowsPerPage: "Rows per page:",
+        of: "of",
+        search: "Search",
+        noData: "No data available",
+        selected: "selected",
+        actions: "Actions",
+        edit: "Edit",
+        delete: "Delete",
+        view: "View",
+        sort: "Sort",
+        filter: "Filter",
+      },
+
+      // Form Validation
+      validation: {
+        required: "This field is required",
+        email: "Must be a valid email",
+        minLength: "Must be at least {{count}} characters",
+        maxLength: "Must be no more than {{count}} characters",
+        numeric: "Must be a number",
+        integer: "Must be an integer",
+        positive: "Must be positive",
+        url: "Must be a valid URL",
+        phone: "Must be a valid phone number",
+        matchField: "Must match {{field}}",
+        passwordStrength: "Password must contain:",
+        passwordReq1: "8+ characters",
+        passwordReq2: "1 uppercase letter",
+        passwordReq3: "1 lowercase letter",
+        passwordReq4: "1 number",
+        passwordReq5: "1 special character",
+      },
+
+      // System Status
+      status: {
+        online: "Online",
+        offline: "Offline",
+        maintenance: "Under Maintenance",
+        degraded: "Degraded Performance",
+        unknown: "Status Unknown",
+        lastUpdated: "Last updated",
+      },
 
         // Footer
         footer: {
@@ -665,18 +853,7 @@ i18n.use(initReactI18next).init({
 
         
         // Dashboard
-        dashboard: {
-          title: "لوحة التحكم",
-          totalOrders: "إجمالي الطلبات",
-          completedOrders: "الطلبات المكتملة",
-          totalUsers: "إجمالي المستخدمين",
-          totalRevenue: "إجمالي الإيرادات",
-          monthlyRevenue: "الإيرادات الشهرية",
-          orderStatus: "توزيع حالات الطلبات",
-          revenue: "الإيرادات ($)",
-          recentOrders: "الطلبات الحديثة",
-          viewAll: "عرض الكل",
-        },
+     
         footer: {
           about: "معلومات عنا",
           quickLinks: "روابط سريعة",
@@ -974,6 +1151,290 @@ i18n.use(initReactI18next).init({
           stain_removal: "إزالة البقع",
           ironing: "خدمة الكي",
         },
+          // App-wide translations
+          app: {
+            name: "دراي كلين برو",
+            slogan: "رعاية احترافية لملابسك",
+            loading: "جاري التحميل...",
+            error: "حدث خطأ",
+            success: "نجاح!",
+            notFound: "الصفحة غير موجودة",
+            goHome: "العودة للصفحة الرئيسية",
+            welcome: "مرحباً",
+          },
+
+          // Navbar
+          navbar: {
+            home: "الصفحة الرئيسية",
+            services: "الخدمات",
+            newOrder: "طلب جديد",
+            orderHistory: "سجل الطلبات",
+            adminDashboard: "لوحة التحكم",
+            login: "تسجيل الدخول",
+            logout: "تسجيل الخروج",
+            profile: "الملف الشخصي",
+            language: "اللغة",
+            employeeDashboard: "لوحة الموظف",
+            settings: "الإعدادات",
+            notifications: "الإشعارات",
+            darkMode: "الوضع المظلم",
+            lightMode: "الوضع المضيء",
+          },
+
+          // Auth
+          auth: {
+            signInTitle: "تسجيل الدخول إلى حسابك",
+            signUpTitle: "إنشاء حساب جديد",
+            fullName: "الاسم الكامل",
+            email: "البريد الإلكتروني",
+            password: "كلمة المرور",
+            confirmPassword: "تأكيد كلمة المرور",
+            rememberMe: "تذكرني",
+            forgotPassword: "نسيت كلمة المرور؟",
+            processing: "جاري المعالجة...",
+            signIn: "تسجيل الدخول",
+            signUp: "تسجيل حساب",
+            or: "أو",
+            needAccount: "تحتاج إلى حساب؟ سجل الآن",
+            haveAccount: "لديك حساب بالفعل؟ سجل الدخول",
+            passwordsNotMatch: "كلمات المرور غير متطابقة",
+            companyLogo: "شعار الشركة",
+            fullNamePlaceholder: "أدخل اسمك الكامل",
+            emailPlaceholder: "أدخل بريدك الإلكتروني",
+            passwordPlaceholder: "أدخل كلمة المرور",
+            confirmPasswordPlaceholder: "تأكيد كلمة المرور",
+            resetPassword: "إعادة تعيين كلمة المرور",
+            sendResetLink: "إرسال رابط التعيين",
+            backToLogin: "العودة لتسجيل الدخول",
+            // Auth error messages
+            errors: {
+              invalidEmail: "الرجاء إدخال بريد إلكتروني صالح",
+              passwordLength: "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+              passwordComplexity:
+                "يجب أن تحتوي كلمة المرور على حرف كبير وحرف صغير ورقم ورمز خاص واحد على الأقل",
+              emailRequired: "البريد الإلكتروني مطلوب",
+              nameRequired: "الاسم الكامل مطلوب",
+              passwordRequired: "كلمة المرور مطلوبة",
+              confirmPasswordRequired: "الرجاء تأكيد كلمة المرور",
+              authFailed: "فشل المصادقة. الرجاء التحقق من بيانات الاعتماد الخاصة بك",
+              userExists: "يوجد مستخدم بهذا البريد الإلكتروني بالفعل",
+              weakPassword: "كلمة المرور ضعيفة جدًا",
+              default: "حدث خطأ. الرجاء المحاولة مرة أخرى",
+              resetPasswordSuccess: "تم إرسال بريد إعادة تعيين كلمة المرور بنجاح",
+            },
+          },
+
+          // Dashboard
+          dashboard: {
+            title: "لوحة التحكم",
+            overview: "نظرة عامة",
+            stats: {
+              totalOrders: "إجمالي الطلبات",
+              completedOrders: "الطلبات المكتملة",
+              pendingOrders: "الطلبات المعلقة",
+              totalRevenue: "إجمالي الإيرادات",
+              activeUsers: "المستخدمون النشطون",
+              newCustomers: "عملاء جدد",
+            },
+            recentActivity: "النشاط الحديث",
+            viewAll: "عرض الكل",
+            quickActions: "إجراءات سريعة",
+            addNewOrder: "إضافة طلب جديد",
+            manageServices: "إدارة الخدمات",
+            viewReports: "عرض التقارير",
+            customerFeedback: "تعليقات العملاء",
+          },
+
+          // Admin specific
+          admin: {
+            users: {
+              title: "إدارة المستخدمين",
+              allUsers: "جميع المستخدمين",
+              activeUsers: "المستخدمون النشطون",
+              inactiveUsers: "المستخدمون غير النشطين",
+              search: "بحث عن المستخدمين",
+              userId: "معرف المستخدم",
+              name: "الاسم",
+              email: "البريد الإلكتروني",
+              role: "الدور",
+              status: "الحالة",
+              lastLogin: "آخر تسجيل دخول",
+              actions: "الإجراءات",
+              createUser: "إنشاء مستخدم",
+              editUser: "تعديل المستخدم",
+              deleteUser: "حذف المستخدم",
+              deleteConfirm: "هل أنت متأكد أنك تريد حذف هذا المستخدم؟",
+              roles: {
+                admin: "مدير",
+                employee: "موظف",
+                client: "عميل"
+              },
+              statuses: {
+                active: "نشط",
+                inactive: "غير نشط"
+              }
+            },
+            settings: {
+              title: "الإعدادات",
+              general: "الإعدادات العامة",
+              services: "إدارة الخدمات",
+              pricing: "إعدادات التسعير",
+              notifications: "إعدادات الإشعارات",
+              businessHours: "ساعات العمل",
+              deliverySettings: "إعدادات التوصيل",
+              saveChanges: "حفظ التغييرات",
+              resetDefaults: "إعادة التعيين إلى الافتراضي",
+            },
+            reports: {
+              title: "التقارير",
+              sales: "تقارير المبيعات",
+              customers: "تقارير العملاء",
+              inventory: "تقارير المخزون",
+              financial: "تقارير مالية",
+              export: "تصدير التقرير",
+              generate: "إنشاء تقرير",
+              dateRange: "نطاق التاريخ",
+              filter: "تصفية",
+            }
+          },
+
+          // Employee Dashboard
+          employee: {
+            dashboard: {
+              title: "لوحة الموظف",
+              assignedTasks: "المهام الموكلة",
+              completedTasks: "المهام المكتملة",
+              pendingApproval: "بانتظار الموافقة",
+              performance: "مقاييس الأداء",
+              efficiency: "تصنيف الكفاءة",
+              attendance: "سجل الحضور",
+              upcoming: "الجدول القادم",
+              recentActivity: "النشاط الحديث",
+            },
+            orders: {
+              process: "معالجة الطلب",
+              updateStatus: "تحديث الحالة",
+              addNotes: "إضافة ملاحظات",
+              viewDetails: "عرض التفاصيل",
+              priority: "الأولوية",
+              high: "عالي",
+              medium: "متوسط",
+              low: "منخفض",
+            },
+            tasks: {
+              title: "إدارة المهام",
+              new: "مهام جديدة",
+              inProgress: "قيد التنفيذ",
+              completed: "مكتملة",
+              overdue: "متأخرة",
+              dueToday: "مستحقة اليوم",
+              markComplete: "وضع علامة مكتمل",
+            }
+          },
+
+          // Client Portal
+          client: {
+            dashboard: {
+              title: "حسابي",
+              recentOrders: "الطلبات الحديثة",
+              loyaltyPoints: "نقاط الولاء",
+              preferences: "التفضيلات",
+              addressBook: "دفتر العناوين",
+              paymentMethods: "طرق الدفع",
+              notifications: "الإشعارات",
+              referrals: "برنامج الإحالة",
+            },
+            loyalty: {
+              points: "نقاط الولاء",
+              rewards: "المكافآت المتاحة",
+              history: "سجل النقاط",
+              redeem: "استبدال المكافأة",
+              tier: "مستوى العضوية",
+              silver: "فضي",
+              gold: "ذهبي",
+              platinum: "بلاتيني",
+            }
+          },
+
+          // Calendar
+          calendar: {
+            title: "التقويم",
+            today: "اليوم",
+            week: "أسبوع",
+            month: "شهر",
+            year: "سنة",
+            agenda: "جدول الأعمال",
+            noEvents: "لا توجد أحداث مجدولة",
+            addEvent: "إضافة حدث",
+            eventDetails: "تفاصيل الحدث",
+            allDay: "طوال اليوم",
+            description: "الوصف",
+            location: "الموقع",
+            repeat: "تكرار",
+            never: "أبداً",
+            daily: "يومي",
+            weekly: "أسبوعي",
+            monthly: "شهري",
+            yearly: "سنوي",
+          },
+
+          // File Upload
+          fileUpload: {
+            title: "رفع الملفات",
+            browse: "تصفح الملفات",
+            dragDrop: "اسحب وأسقط الملفات هنا",
+            maxSize: "الحد الأقصى لحجم الملف: {{size}} ميجابايت",
+            supportedFormats: "الصيغ المدعومة: {{formats}}",
+            uploadSuccess: "تم الرفع بنجاح",
+            uploadFailed: "فشل الرفع",
+            remove: "إزالة",
+            preview: "معاينة",
+          },
+
+          // Data Tables
+          dataTable: {
+            rowsPerPage: "صفوف لكل صفحة:",
+            of: "من",
+            search: "بحث",
+            noData: "لا توجد بيانات متاحة",
+            selected: "محدد",
+            actions: "إجراءات",
+            edit: "تعديل",
+            delete: "حذف",
+            view: "عرض",
+            sort: "ترتيب",
+            filter: "تصفية",
+          },
+
+          // Form Validation
+          validation: {
+            required: "هذا الحقل مطلوب",
+            email: "يجب أن يكون بريدًا إلكترونيًا صالحًا",
+            minLength: "يجب أن يكون {{count}} أحرف على الأقل",
+            maxLength: "يجب ألا يزيد عن {{count}} أحرف",
+            numeric: "يجب أن يكون رقمًا",
+            integer: "يجب أن يكون عددًا صحيحًا",
+            positive: "يجب أن يكون موجبًا",
+            url: "يجب أن يكون رابطًا صالحًا",
+            phone: "يجب أن يكون رقم هاتف صالح",
+            matchField: "يجب أن يتطابق مع {{field}}",
+            passwordStrength: "يجب أن تحتوي كلمة المرور على:",
+            passwordReq1: "8+ أحرف",
+            passwordReq2: "حرف كبير واحد على الأقل",
+            passwordReq3: "حرف صغير واحد على الأقل",
+            passwordReq4: "رقم واحد على الأقل",
+            passwordReq5: "رمز خاص واحد على الأقل",
+          },
+
+          // System Status
+          status: {
+            online: "متصل",
+            offline: "غير متصل",
+            maintenance: "تحت الصيانة",
+            degraded: "أداء منخفض",
+            unknown: "حالة غير معروفة",
+            lastUpdated: "آخر تحديث",
+          },
       },
     },
   },

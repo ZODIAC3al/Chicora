@@ -163,7 +163,7 @@ const Dashboard = () => {
         ...service,
         orderCount: serviceOrders.length,
         totalRevenue: serviceOrders.reduce(
-          (sum, order) => sum + (order.total_price || 0),
+          (sum, order) => sum + (order.details.total_price || 0),
           0
         ),
         pendingOrders: serviceOrders.filter((o) => o.status === "pending")
@@ -182,7 +182,7 @@ const Dashboard = () => {
         ...user,
         orderCount: userOrders.length,
         totalSpent: userOrders.reduce(
-          (sum, order) => sum + (order.total_price || 0),
+          (sum, order) => sum + (order.details.total_price || 0),
           0
         ),
         lastOrder: userOrders.length > 0 ? userOrders[0].created_at : null,
@@ -195,7 +195,7 @@ const Dashboard = () => {
         acc[order.status] = (acc[order.status] || 0) + 1;
         return acc;
       },
-      { completed: 0, pending: 0, in_progress: 0, cancelled: 0 }
+      { completed: 0, pending: 0, inProgress: 0, cancelled: 0 }
     );
 
     // Revenue by time period
@@ -223,7 +223,7 @@ const Dashboard = () => {
         }
 
         revenueByPeriod[period] =
-          (revenueByPeriod[period] || 0) + (order.total_price || 0);
+          (revenueByPeriod[period] || 0) + (order.details.total_price || 0);
       }
     });
 
@@ -269,17 +269,18 @@ const Dashboard = () => {
       totalServices: services.length,
       completedOrders: statusDistribution.completed,
       pendingOrders: statusDistribution.pending,
-      inProgressOrders: statusDistribution.in_progress,
+      inProgressOrders: statusDistribution.inProgress,
       cancelledOrders: statusDistribution.cancelled,
       totalRevenue: filteredOrders.reduce(
         (sum, order) =>
-          sum + (order.status === "completed" ? order.total_price || 0 : 0),
+          sum +
+          (order.status === "completed" ? order.details.total_price || 0 : 0),
         0
       ),
       avgOrderValue:
         filteredOrders.length > 0
           ? filteredOrders.reduce(
-              (sum, order) => sum + (order.total_price || 0),
+              (sum, order) => sum + (order.details.total_price || 0),
               0
             ) / filteredOrders.length
           : 0,
@@ -298,7 +299,8 @@ const Dashboard = () => {
 
   // Memoize processed data
   const processedData = useMemo(() => {
-    if (!allOrders.length || !allUsers.length || !allServices.length) return null;
+    if (!allOrders.length || !allUsers.length || !allServices.length)
+      return null;
     return processDashboardData(allOrders, allUsers, allServices);
   }, [allOrders, allUsers, allServices, timeRange, searchQuery, statusFilter]);
 
@@ -383,30 +385,30 @@ const Dashboard = () => {
       initial="hidden"
       animate="visible"
       variants={fadeIn}
-      className="container mx-auto px-4 py-8"
+      className="container mx-auto px-2 sm:px-4 py-6"
       dir={isRTL ? "rtl" : "ltr"}
     >
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
           <MotionH1
             variants={slideUp}
-            className="text-2xl md:text-3xl font-bold text-gray-900"
+            className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900"
           >
             {t("dashboard.adminTitle")}
           </MotionH1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-500 text-sm sm:text-base mt-1">
             {t("dashboard.welcomeBack")}, {user?.name || t("dashboard.admin")}
           </p>
         </div>
 
-        <div className="flex items-center space-x-4 mt-4 md:mt-0">
-          <div className="flex items-center space-x-2 bg-white rounded-lg p-2 shadow-sm border border-gray-200">
-            <FiCalendar className="text-gray-500" />
+        <div className="flex items-center space-x-2 sm:space-x-4 mt-3 sm:mt-0">
+          <div className="flex items-center space-x-1 sm:space-x-2 bg-white rounded-lg p-1 sm:p-2 shadow-sm border border-gray-200">
+            <FiCalendar className="text-gray-500 text-sm sm:text-base" />
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              className="bg-transparent border-none focus:ring-0 text-sm text-gray-700"
+              className="bg-transparent border-none focus:ring-0 text-xs sm:text-sm text-gray-700"
             >
               <option value="weekly">{t("dashboard.weekly")}</option>
               <option value="monthly">{t("dashboard.monthly")}</option>
@@ -416,70 +418,74 @@ const Dashboard = () => {
 
           <button
             onClick={handleRefresh}
-            className="p-2 bg-white rounded-lg shadow-sm flex items-center justify-center border border-gray-200 hover:bg-gray-50 transition"
+            className="p-1 sm:p-2 bg-white rounded-lg shadow-sm flex items-center justify-center border border-gray-200 hover:bg-gray-50 transition"
             title={t("dashboard.refresh")}
           >
             <FiRefreshCw
-              className={`text-gray-500 ${isRefreshing ? "animate-spin" : ""}`}
+              className={`text-gray-500 text-sm sm:text-base ${
+                isRefreshing ? "animate-spin" : ""
+              }`}
             />
           </button>
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex border-b border-gray-200 mb-6 overflow-x-auto">
-        <button
-          className={`py-2 px-4 font-medium whitespace-nowrap ${
-            activeTab === "overview"
-              ? "text-indigo-600 border-b-2 border-indigo-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-          onClick={() => {
-            setActiveTab("overview");
-            setCurrentPage(1);
-          }}
-        >
-          {t("dashboard.overview")}
-        </button>
-        <button
-          className={`py-2 px-4 font-medium whitespace-nowrap ${
-            activeTab === "users"
-              ? "text-indigo-600 border-b-2 border-indigo-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-          onClick={() => {
-            setActiveTab("users");
-            setCurrentPage(1);
-          }}
-        >
-          {t("dashboard.users")}
-        </button>
-        <button
-          className={`py-2 px-4 font-medium whitespace-nowrap ${
-            activeTab === "orders"
-              ? "text-indigo-600 border-b-2 border-indigo-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-          onClick={() => {
-            setActiveTab("orders");
-            setCurrentPage(1);
-          }}
-        >
-          {t("dashboard.orders")}
-        </button>
-        <button
-          className={`py-2 px-4 font-medium whitespace-nowrap ${
-            activeTab === "services"
-              ? "text-indigo-600 border-b-2 border-indigo-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-          onClick={() => {
-            setActiveTab("services");
-            setCurrentPage(1);
-          }}
-        >
-          {t("dashboard.services")}
-        </button>
+      {/* Navigation Tabs - Scrollable on mobile */}
+      <div className="flex border-b border-gray-200 mb-4 sm:mb-6 overflow-x-auto">
+        <div className="flex space-x-1 sm:space-x-0">
+          <button
+            className={`py-2 px-3 sm:px-4 text-sm sm:text-base font-medium whitespace-nowrap ${
+              activeTab === "overview"
+                ? "text-indigo-600 border-b-2 border-indigo-600"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+            onClick={() => {
+              setActiveTab("overview");
+              setCurrentPage(1);
+            }}
+          >
+            {t("dashboard.overview")}
+          </button>
+          <button
+            className={`py-2 px-3 sm:px-4 text-sm sm:text-base font-medium whitespace-nowrap ${
+              activeTab === "users"
+                ? "text-indigo-600 border-b-2 border-indigo-600"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+            onClick={() => {
+              setActiveTab("users");
+              setCurrentPage(1);
+            }}
+          >
+            {t("dashboard.users")}
+          </button>
+          <button
+            className={`py-2 px-3 sm:px-4 text-sm sm:text-base font-medium whitespace-nowrap ${
+              activeTab === "orders"
+                ? "text-indigo-600 border-b-2 border-indigo-600"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+            onClick={() => {
+              setActiveTab("orders");
+              setCurrentPage(1);
+            }}
+          >
+            {t("dashboard.orders")}
+          </button>
+          <button
+            className={`py-2 px-3 sm:px-4 text-sm sm:text-base font-medium whitespace-nowrap ${
+              activeTab === "services"
+                ? "text-indigo-600 border-b-2 border-indigo-600"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+            onClick={() => {
+              setActiveTab("services");
+              setCurrentPage(1);
+            }}
+          >
+            {t("dashboard.services")}
+          </button>
+        </div>
       </div>
 
       {stats && (
@@ -492,18 +498,18 @@ const Dashboard = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Key Metrics */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {/* Key Metrics - Adjusted for mobile */}
+              <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
                 <motion.div
                   whileHover={{ y: -5 }}
-                  className="bg-white p-6 rounded-lg shadow border-l-4 border-indigo-500"
+                  className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow border-l-4 border-indigo-500"
                 >
                   <div className="flex justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-500">
+                      <p className="text-xs sm:text-sm font-medium text-gray-500">
                         {t("dashboard.totalRevenue")}
                       </p>
-                      <p className="text-2xl font-bold mt-2 text-gray-900">
+                      <p className="text-lg sm:text-xl md:text-2xl font-bold mt-1 sm:mt-2 text-gray-900">
                         {new Intl.NumberFormat(i18n.language, {
                           style: "currency",
                           currency: "USD",
@@ -513,44 +519,44 @@ const Dashboard = () => {
                         {t("dashboard.last30Days")}
                       </p>
                     </div>
-                    <div className="p-3 bg-indigo-100 rounded-lg text-indigo-600">
-                      <FiDollarSign className="text-xl" />
+                    <div className="p-2 sm:p-3 bg-indigo-100 rounded-lg text-indigo-600">
+                      <FiDollarSign className="text-sm sm:text-base md:text-xl" />
                     </div>
                   </div>
                 </motion.div>
 
                 <motion.div
                   whileHover={{ y: -5 }}
-                  className="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500"
+                  className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow border-l-4 border-blue-500"
                 >
                   <div className="flex justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-500">
+                      <p className="text-xs sm:text-sm font-medium text-gray-500">
                         {t("dashboard.totalOrders")}
                       </p>
-                      <p className="text-2xl font-bold mt-2 text-gray-900">
+                      <p className="text-lg sm:text-xl md:text-2xl font-bold mt-1 sm:mt-2 text-gray-900">
                         {stats.totalOrders.toLocaleString()}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
                         {stats.completedOrders} {t("dashboard.completed")}
                       </p>
                     </div>
-                    <div className="p-3 bg-blue-100 rounded-lg text-blue-600">
-                      <FiShoppingCart className="text-xl" />
+                    <div className="p-2 sm:p-3 bg-blue-100 rounded-lg text-blue-600">
+                      <FiShoppingCart className="text-sm sm:text-base md:text-xl" />
                     </div>
                   </div>
                 </motion.div>
 
                 <motion.div
                   whileHover={{ y: -5 }}
-                  className="bg-white p-6 rounded-lg shadow border-l-4 border-green-500"
+                  className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow border-l-4 border-green-500"
                 >
                   <div className="flex justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-500">
+                      <p className="text-xs sm:text-sm font-medium text-gray-500">
                         {t("dashboard.activeUsers")}
                       </p>
-                      <p className="text-2xl font-bold mt-2 text-gray-900">
+                      <p className="text-lg sm:text-xl md:text-2xl font-bold mt-1 sm:mt-2 text-gray-900">
                         {stats.totalUsers.toLocaleString()}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
@@ -558,22 +564,22 @@ const Dashboard = () => {
                         {t("dashboard.conversion")}
                       </p>
                     </div>
-                    <div className="p-3 bg-green-100 rounded-lg text-green-600">
-                      <FiUsers className="text-xl" />
+                    <div className="p-2 sm:p-3 bg-green-100 rounded-lg text-green-600">
+                      <FiUsers className="text-sm sm:text-base md:text-xl" />
                     </div>
                   </div>
                 </motion.div>
 
                 <motion.div
                   whileHover={{ y: -5 }}
-                  className="bg-white p-6 rounded-lg shadow border-l-4 border-purple-500"
+                  className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow border-l-4 border-purple-500"
                 >
                   <div className="flex justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-500">
+                      <p className="text-xs sm:text-sm font-medium text-gray-500">
                         {t("dashboard.services")}
                       </p>
-                      <p className="text-2xl font-bold mt-2 text-gray-900">
+                      <p className="text-lg sm:text-xl md:text-2xl font-bold mt-1 sm:mt-2 text-gray-900">
                         {stats.totalServices.toLocaleString()}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
@@ -581,23 +587,23 @@ const Dashboard = () => {
                           t("dashboard.noServices")}
                       </p>
                     </div>
-                    <div className="p-3 bg-purple-100 rounded-lg text-purple-600">
-                      <GiClothes className="text-xl" />
+                    <div className="p-2 sm:p-3 bg-purple-100 rounded-lg text-purple-600">
+                      <GiClothes className="text-sm sm:text-base md:text-xl" />
                     </div>
                   </div>
                 </motion.div>
               </div>
 
-              {/* Main Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Main Charts - Stack on mobile */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
                 <motion.div
                   whileHover={{ scale: 1.01 }}
-                  className="bg-white p-6 rounded-lg shadow"
+                  className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">
                     {t("dashboard.revenueTrend")}
                   </h3>
-                  <div className="h-80">
+                  <div className="h-60 sm:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={stats.revenueChartData}>
                         <CartesianGrid
@@ -629,19 +635,20 @@ const Dashboard = () => {
 
                 <motion.div
                   whileHover={{ scale: 1.01 }}
-                  className="bg-white p-6 rounded-lg shadow"
+                  className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">
                     {t("dashboard.orderStatus")}
                   </h3>
-                  <div className="h-80">
+                  <div className="h-60 sm:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={stats.statusData}
                           cx="50%"
                           cy="50%"
-                          outerRadius={80}
+                          outerRadius={60}
+                          innerRadius={30}
                           fill="#8884d8"
                           dataKey="value"
                           label={({ name, percent }) =>
@@ -665,28 +672,30 @@ const Dashboard = () => {
                 </motion.div>
               </div>
 
-              {/* Top Performers */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Top Performers - Stack on mobile */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
                 <motion.div
                   whileHover={{ scale: 1.01 }}
-                  className="bg-white p-6 rounded-lg shadow"
+                  className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">
                     {t("dashboard.topServices")}
                   </h3>
-                  <div className="space-y-4">
+                  <div className="space-y-2 sm:space-y-4">
                     {stats.topServices.map((service, index) => (
                       <div
                         key={service.id}
-                        className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition"
+                        className="flex items-center justify-between p-2 sm:p-3 hover:bg-gray-50 rounded-lg transition"
                       >
                         <div className="flex items-center">
-                          <span className="font-medium text-gray-900 mr-3 w-6 text-center">
+                          <span className="font-medium text-gray-900 mr-2 sm:mr-3 w-4 sm:w-6 text-center text-sm sm:text-base">
                             {index + 1}.
                           </span>
-                          <span className="truncate">{service.name}</span>
+                          <span className="truncate text-sm sm:text-base">
+                            {service.name}
+                          </span>
                         </div>
-                        <div className="text-sm text-gray-500 whitespace-nowrap">
+                        <div className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
                           {service.orderCount} {t("dashboard.orders")} •{" "}
                           {new Intl.NumberFormat(i18n.language, {
                             style: "currency",
@@ -700,29 +709,31 @@ const Dashboard = () => {
 
                 <motion.div
                   whileHover={{ scale: 1.01 }}
-                  className="bg-white p-6 rounded-lg shadow"
+                  className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">
                     {t("dashboard.topCustomers")}
                   </h3>
-                  <div className="space-y-4">
+                  <div className="space-y-2 sm:space-y-4">
                     {stats.topUsers.map((user, index) => (
                       <div
                         key={user.id}
-                        className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition"
+                        className="flex items-center justify-between p-2 sm:p-3 hover:bg-gray-50 rounded-lg transition"
                       >
                         <div className="flex items-center">
-                          <span className="font-medium text-gray-900 mr-3 w-6 text-center">
+                          <span className="font-medium text-gray-900 mr-2 sm:mr-3 w-4 sm:w-6 text-center text-sm sm:text-base">
                             {index + 1}.
                           </span>
                           <div>
-                            <p className="font-medium">{user.name}</p>
-                            <p className="text-xs text-gray-500">
+                            <p className="font-medium text-sm sm:text-base">
+                              {user.name}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate max-w-[100px] sm:max-w-none">
                               {user.email}
                             </p>
                           </div>
                         </div>
-                        <div className="text-sm text-gray-500 whitespace-nowrap">
+                        <div className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
                           {user.orderCount} {t("dashboard.orders")} •{" "}
                           {new Intl.NumberFormat(i18n.language, {
                             style: "currency",
@@ -744,124 +755,302 @@ const Dashboard = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
+              className="w-full"
             >
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">
+              <div
+                className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow"
+                dir={isRTL ? "rtl" : "ltr"}
+              >
+                {/* Header with Search and Filter */}
+                <div
+                  className={`flex flex-col ${
+                    isRTL ? "md:flex-row-reverse" : "md:flex-row"
+                  } justify-between items-start md:items-center mb-4 sm:mb-6 gap-3`}
+                >
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 whitespace-nowrap">
                     {t("dashboard.userManagement")}
                   </h3>
-                  <div className="mt-2 md:mt-0 relative">
-                    <input
-                      type="text"
-                      placeholder={t("dashboard.searchUsers")}
-                      className="pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <FiSearch className="absolute left-3 top-3 text-gray-400" />
+                  <div className="w-full md:w-auto flex flex-col sm:flex-row gap-2">
+                    <div className="relative flex-grow">
+                      <div
+                        className={`absolute inset-y-0 ${
+                          isRTL ? "right-0 pr-3" : "left-0 pl-3"
+                        } flex items-center pointer-events-none`}
+                      >
+                        <FiSearch className="text-gray-400 text-sm sm:text-base" />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder={t("dashboard.searchUsers")}
+                        className={`w-full ${
+                          isRTL ? "pr-8 pl-3" : "pl-8 pr-3"
+                        } py-1 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm`}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <select
+                        className={`w-full sm:w-auto px-3 py-1 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm ${
+                          isRTL ? "text-right" : "text-left"
+                        }`}
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                      >
+                        <option value="all">{t("dashboard.allUsers")}</option>
+                        <option value="active">{t("dashboard.active")}</option>
+                        <option value="inactive">
+                          {t("dashboard.inactive")}
+                        </option>
+                      </select>
+                    </div>
                   </div>
                 </div>
+
+                {/* Scrollable Table */}
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t("dashboard.name")}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t("dashboard.email")}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t("dashboard.phone")}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t("dashboard.orders")}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t("dashboard.totalSpent")}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t("dashboard.lastActivity")}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {paginatedUsers.map((user) => (
-                        <tr key={user.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                <FiUser className="text-indigo-600" />
-                              </div>
-                              <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">
-                                  {user.name}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {user.role || "customer"}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {user.email}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {user.phone || "-"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {user.orderCount}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {new Intl.NumberFormat(i18n.language, {
-                              style: "currency",
-                              currency: "USD",
-                            }).format(user.totalSpent)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {user.lastOrder
-                              ? new Date(user.lastOrder).toLocaleDateString(
-                                  i18n.language
-                                )
-                              : t("dashboard.never")}
-                          </td>
+                  <div className="min-w-[600px]">
+                    {" "}
+                    {/* Minimum width for small screens */}
+                    <table className="w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th
+                            className={`px-3 sm:px-4 py-2 text-${
+                              isRTL ? "right" : "left"
+                            } text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap`}
+                          >
+                            {t("dashboard.user")}
+                          </th>
+                          <th
+                            className={`px-3 sm:px-4 py-2 text-${
+                              isRTL ? "right" : "left"
+                            } text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap`}
+                          >
+                            {t("dashboard.contact")}
+                          </th>
+                          <th
+                            className={`px-3 sm:px-4 py-2 text-${
+                              isRTL ? "right" : "left"
+                            } text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap`}
+                          >
+                            {t("dashboard.orders")}
+                          </th>
+                          <th
+                            className={`px-3 sm:px-4 py-2 text-${
+                              isRTL ? "right" : "left"
+                            } text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap hidden sm:table-cell`}
+                          >
+                            {t("dashboard.spending")}
+                          </th>
+                          <th
+                            className={`px-3 sm:px-4 py-2 text-${
+                              isRTL ? "right" : "left"
+                            } text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap hidden md:table-cell`}
+                          >
+                            {t("dashboard.lastActive")}
+                          </th>
+                          <th
+                            className={`px-3 sm:px-4 py-2 text-${
+                              isRTL ? "right" : "left"
+                            } text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap`}
+                          >
+                            {t("dashboard.actions")}
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {paginatedUsers.map((user) => (
+                          <tr key={user.id} className="hover:bg-gray-50">
+                            <td
+                              className={`px-3 sm:px-4 py-3 whitespace-nowrap`}
+                            >
+                              <div
+                                className={`flex items-center ${
+                                  isRTL ? "flex-row-reverse" : ""
+                                }`}
+                              >
+                                <div className="flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-indigo-100 flex items-center justify-center">
+                                  <FiUser className="text-indigo-600 text-sm sm:text-base" />
+                                </div>
+                                <div
+                                  className={
+                                    isRTL ? "mr-2 sm:mr-3" : "ml-2 sm:ml-3"
+                                  }
+                                >
+                                  <div
+                                    className={`text-xs sm:text-sm font-medium text-gray-900 whitespace-nowrap`}
+                                  >
+                                    {user.name}
+                                  </div>
+                                  <div className="text-xs text-gray-500">
+                                    {user.role || t("dashboard.customer")}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td
+                              className={`px-3 sm:px-4 py-3 text-${
+                                isRTL ? "right" : "left"
+                              }`}
+                            >
+                              <div
+                                className={`text-xs sm:text-sm text-gray-900 whitespace-nowrap`}
+                              >
+                                {user.email}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {user.phone || t("dashboard.noPhone")}
+                              </div>
+                            </td>
+                            <td
+                              className={`px-3 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-900 font-medium text-${
+                                isRTL ? "right" : "left"
+                              }`}
+                            >
+                              {user.orderCount}
+                            </td>
+                            <td
+                              className={`px-3 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-900 hidden sm:table-cell text-${
+                                isRTL ? "right" : "left"
+                              }`}
+                            >
+                              {new Intl.NumberFormat(i18n.language, {
+                                style: "currency",
+                                currency: "USD",
+                              }).format(user.totalSpent)}
+                            </td>
+                            <td
+                              className={`px-3 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden md:table-cell text-${
+                                isRTL ? "right" : "left"
+                              }`}
+                            >
+                              {user.lastOrder
+                                ? new Date(user.lastOrder).toLocaleDateString(
+                                    i18n.language,
+                                    {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                    }
+                                  )
+                                : t("dashboard.never")}
+                            </td>
+                            <td
+                              className={`px-3 sm:px-4 py-3 whitespace-nowrap text-xs sm:text-sm text-${
+                                isRTL ? "left" : "right"
+                              }`}
+                            >
+                              <button className="text-indigo-600 hover:text-indigo-900 mx-1">
+                                {t("dashboard.view")}
+                              </button>
+                              <button className="text-gray-600 hover:text-gray-900 mx-1">
+                                {t("dashboard.edit")}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                {/* Pagination Controls */}
-                <div className="flex items-center justify-between mt-4">
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                    disabled={currentPage === 1}
-                    className={`flex items-center px-3 py-1 rounded-md ${
-                      currentPage === 1
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-indigo-600 hover:bg-indigo-50"
-                    }`}
-                  >
-                    <FiChevronLeft className="mr-1" />
-                    {t("dashboard.previous")}
-                  </button>
-                  <span className="text-sm text-gray-700">
-                    {t("dashboard.page")} {currentPage} {t("dashboard.of")}{" "}
-                    {totalPages}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(p + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                    className={`flex items-center px-3 py-1 rounded-md ${
-                      currentPage === totalPages
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-indigo-600 hover:bg-indigo-50"
-                    }`}
-                  >
-                    {t("dashboard.next")}
-                    <FiChevronRight className="ml-1" />
-                  </button>
+
+                {/* Pagination */}
+                <div
+                  className={`flex flex-col sm:flex-row items-center justify-between mt-3 sm:mt-4 gap-2 ${
+                    isRTL ? "sm:flex-row-reverse" : ""
+                  }`}
+                >
+                  <div className="text-xs sm:text-sm text-gray-700">
+                    {t("dashboard.showing")}{" "}
+                    {(currentPage - 1) * itemsPerPage + 1}-
+                    {Math.min(
+                      currentPage * itemsPerPage,
+                      stats?.userAnalytics.length || 0
+                    )}{" "}
+                    {t("dashboard.of")} {stats?.userAnalytics.length || 0}{" "}
+                    {t("dashboard.users")}
+                  </div>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                      disabled={currentPage === 1}
+                      className={`flex items-center px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${
+                        currentPage === 1
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "text-indigo-600 hover:bg-indigo-50"
+                      } ${isRTL ? "flex-row-reverse" : ""}`}
+                    >
+                      {isRTL ? (
+                        <>
+                          {t("dashboard.next")}
+                          <FiChevronRight className="ml-1" />
+                        </>
+                      ) : (
+                        <>
+                          <FiChevronLeft className="mr-1" />
+                          {t("dashboard.previous")}
+                        </>
+                      )}
+                    </button>
+
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${
+                            currentPage === pageNum
+                              ? "bg-indigo-600 text-white"
+                              : "text-indigo-600 hover:bg-indigo-50"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+
+                    {totalPages > 5 && (
+                      <span className="px-2 py-1 text-xs sm:text-sm text-gray-500">
+                        ...
+                      </span>
+                    )}
+
+                    <button
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(p + 1, totalPages))
+                      }
+                      disabled={currentPage === totalPages}
+                      className={`flex items-center px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm ${
+                        currentPage === totalPages
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "text-indigo-600 hover:bg-indigo-50"
+                      } ${isRTL ? "flex-row-reverse" : ""}`}
+                    >
+                      {isRTL ? (
+                        <>
+                          {t("dashboard.previous")}
+                          <FiChevronLeft className="ml-1" />
+                        </>
+                      ) : (
+                        <>
+                          {t("dashboard.next")}
+                          <FiChevronRight className="mr-1" />
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -875,30 +1064,30 @@ const Dashboard = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">
+              <div className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                     {t("dashboard.orderManagement")}
                   </h3>
-                  <div className="mt-2 md:mt-0 flex flex-col sm:flex-row gap-2">
-                    <div className="relative">
+                  <div className="mt-2 md:mt-0 flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                    <div className="relative w-full sm:w-auto">
                       <input
                         type="text"
                         placeholder={t("dashboard.searchOrders")}
-                        className="pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                        className="w-full pl-8 pr-3 py-1 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                       />
-                      <FiSearch className="absolute left-3 top-3 text-gray-400" />
+                      <FiSearch className="absolute left-2 sm:left-3 top-2 sm:top-3 text-gray-400 text-sm sm:text-base" />
                     </div>
                     <select
-                      className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                      className="w-full sm:w-auto px-3 py-1 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm"
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
                     >
                       <option value="all">{t("dashboard.allStatus")}</option>
                       <option value="pending">{t("dashboard.pending")}</option>
-                      <option value="in_progress">
+                      <option value="inProgress">
                         {t("dashboard.inProgress")}
                       </option>
                       <option value="completed">
@@ -914,25 +1103,25 @@ const Dashboard = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t("dashboard.orderId")}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t("dashboard.customer")}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                           {t("dashboard.service")}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t("dashboard.amount")}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t("dashboard.status")}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                           {t("dashboard.date")}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           {t("dashboard.actions")}
                         </th>
                       </tr>
@@ -940,41 +1129,41 @@ const Dashboard = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {stats.recentOrders.map((order) => (
                         <tr key={order.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">
                             #{order.id.slice(0, 8).toUpperCase()}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                             {order.user?.name || t("dashboard.unknown")}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden sm:table-cell">
                             {order.service?.name || t("dashboard.unknown")}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                             {new Intl.NumberFormat(i18n.language, {
                               style: "currency",
                               currency: "USD",
-                            }).format(order.total_price || 0)}
+                            }).format(order.details.total_price || 0)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-3 whitespace-nowrap">
                             <div className="flex items-center">
                               {getStatusIcon(order.status)}
-                              <span className="ml-2 capitalize">
+                              <span className="ml-1 sm:ml-2 capitalize text-xs sm:text-sm">
                                 {order.status.replace("_", " ")}
                               </span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden md:table-cell">
                             {new Date(order.created_at).toLocaleDateString(
                               i18n.language
                             )}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-3 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                             <select
                               value={order.status}
                               onChange={(e) =>
                                 updateOrderStatus(order.id, e.target.value)
                               }
-                              className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                              className="text-xs sm:text-sm border border-gray-300 rounded-md px-1 sm:px-2 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                             >
                               <option value="pending">
                                 {t("dashboard.pending")}
@@ -1007,20 +1196,20 @@ const Dashboard = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">
+              <div className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                     {t("dashboard.serviceAnalytics")}
                   </h3>
-                  <div className="mt-2 md:mt-0 relative">
+                  <div className="mt-2 md:mt-0 relative w-full md:w-auto">
                     <input
                       type="text"
                       placeholder={t("dashboard.searchServices")}
-                      className="pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                      className="w-full pl-8 pr-3 py-1 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <FiSearch className="absolute left-3 top-3 text-gray-400" />
+                    <FiSearch className="absolute left-2 sm:left-3 top-2 sm:top-3 text-gray-400 text-sm sm:text-base" />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -34,6 +34,7 @@ const ProtectedRoute = ({ children, roles = [] }) => {
   const user = authUser || contextUser;
 
   if (loading) {
+    
     return <Loading />;
   }
 

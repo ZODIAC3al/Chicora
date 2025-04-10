@@ -4,12 +4,11 @@ import {
   useEffect,
   useState,
   useCallback,
+  useMemo,
 } from "react";
 import PropTypes from "prop-types";
 import { supabase } from "../../lib/supabase";
-
 const AuthContext = createContext();
-
 export const AuthProvider = ({ children, navigate }) => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -21,14 +20,12 @@ export const AuthProvider = ({ children, navigate }) => {
       setUser(user);
       setLoading(true);
 
-      // Check if user exists in public.users table
       const { data: existingProfile, error: fetchError } = await supabase
         .from("users")
         .select("*")
         .eq("id", user.id)
         .single();
 
-      // If no profile exists (new signup), create one with all metadata
       if (fetchError || !existingProfile) {
         const { data: newProfile, error: createError } = await supabase
           .from("users")
@@ -45,7 +42,6 @@ export const AuthProvider = ({ children, navigate }) => {
         if (createError) throw createError;
         setProfile(newProfile);
       } else {
-        // If profile exists, ensure phone is updated if it's in metadata
         if (
           user.user_metadata?.phone &&
           existingProfile.phone !== user.user_metadata.phone
@@ -72,88 +68,14 @@ export const AuthProvider = ({ children, navigate }) => {
       setLoading(false);
     }
   }, []);
-  useEffect(() => {
-    let authSubscription;
-    let mounted = true;
 
-    const initializeAuth = async () => {
-      try {
-        setLoading(true);
-
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession();
-
-        if (sessionError) {
-          console.error("Session check error:", sessionError);
-          setError(sessionError);
-          if (mounted) setLoading(false);
-          return;
-        }
-
-        if (session?.user) {
-          await handleUserSession(session.user);
-        }
-
-        // Listen for auth state changes
-        const {
-          data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (event, session) => {
-          try {
-            if (session?.user) {
-              await handleUserSession(session.user);
-
-              if (event === "SIGNED_IN" && typeof navigate === "function") {
-                navigate("/");
-              }
-            } else {
-              setUser(null);
-              setProfile(null);
-
-              if (
-                typeof navigate === "function" &&
-                window.location.pathname !== "/"
-              ) {
-                navigate("/");
-              }
-            }
-          } catch (err) {
-            console.error("Auth state change error:", err);
-            setError(err);
-          } finally {
-            if (mounted) setLoading(false);
-          }
-        });
-
-        authSubscription = subscription;
-      } catch (err) {
-        console.error("Initialization error:", err);
-        setError(err);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-
-    initializeAuth();
-
-    return () => {
-      mounted = false;
-      if (authSubscription?.unsubscribe) {
-        authSubscription.unsubscribe();
-      }
-    };
-  }, [navigate, handleUserSession]);
-
-  const signIn = async (email, password) => {
+  const signIn = useCallback(async (email, password) => {
     try {
       setLoading(true);
-      const { data, error: authError } = await supabase.auth.signInWithPassword(
-        {
-          email,
-          password,
-        }
-      );
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
       if (authError) throw authError;
       return data;
@@ -164,9 +86,9 @@ export const AuthProvider = ({ children, navigate }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const signUp = async (email, password, metadata = {}) => {
+  const signUp = useCallback(async (email, password, metadata = {}) => {
     try {
       setLoading(true);
       const { data, error: authError } = await supabase.auth.signUp({
@@ -175,14 +97,13 @@ export const AuthProvider = ({ children, navigate }) => {
         options: {
           data: {
             ...metadata,
-            phone: metadata.phone, // Ensure phone is explicitly included
+            phone: metadata.phone,
           },
         },
       });
 
       if (authError) throw authError;
 
-      // Immediately create/update the profile in public.users
       if (data.user) {
         const { error: profileError } = await supabase.from("users").upsert({
           id: data.user.id,
@@ -203,9 +124,9 @@ export const AuthProvider = ({ children, navigate }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
       setLoading(true);
       const { error } = await supabase.auth.signOut();
@@ -219,14 +140,13 @@ export const AuthProvider = ({ children, navigate }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const updateProfile = async (updates) => {
+  const updateProfile = useCallback(async (updates) => {
     try {
       if (!user) throw new Error("User not authenticated");
       setLoading(true);
 
-      // Update auth if needed
       if (updates.email) {
         const { error: authError } = await supabase.auth.updateUser({
           email: updates.email,
@@ -234,7 +154,6 @@ export const AuthProvider = ({ children, navigate }) => {
         if (authError) throw authError;
       }
 
-      // Update profile in database
       const { data, error: profileError } = await supabase
         .from("users")
         .update(updates)
@@ -252,9 +171,80 @@ export const AuthProvider = ({ children, navigate }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const value = {
+  useEffect(() => {
+    let mounted = true;
+    let authSubscription;
+
+    const initializeAuth = async () => {
+      try {
+        setLoading(true);
+
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.error("Session check error:", sessionError);
+          if (mounted) setError(sessionError);
+          return;
+        }
+
+        if (session?.user && mounted) {
+          await handleUserSession(session.user);
+        }
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            if (!mounted) return;
+
+            try {
+              if (session?.user) {
+                await handleUserSession(session.user);
+
+                if (event === "SIGNED_IN" && typeof navigate === "function") {
+                  navigate("/");
+                }
+              } else {
+                setUser(null);
+                setProfile(null);
+
+                if (typeof navigate === "function" && 
+                    window.location.pathname !== "/") {
+                  navigate("/");
+                }
+              }
+            } catch (err) {
+              console.error("Auth state change error:", err);
+              setError(err);
+            } finally {
+              if (mounted) setLoading(false);
+            }
+          }
+        );
+
+        authSubscription = subscription;
+      } catch (err) {
+        console.error("Initialization error:", err);
+        if (mounted) setError(err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    initializeAuth();
+
+    return () => {
+      mounted = false;
+      if (authSubscription?.unsubscribe) {
+        authSubscription.unsubscribe();
+      }
+    };
+  }, [navigate, handleUserSession]);
+
+  const value = useMemo(() => ({
     user,
     profile,
     loading,
@@ -263,11 +253,11 @@ export const AuthProvider = ({ children, navigate }) => {
     signUp,
     signOut,
     updateProfile,
-  };
+  }), [user, profile, loading, error, signIn, signUp, signOut, updateProfile]);
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };

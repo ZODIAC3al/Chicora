@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { motion } from "framer-motion";
 import i18n from "i18next";
 import {
@@ -10,7 +17,7 @@ import {
   getAllUsers as getSupabaseAllUsers,
   updateUserProfile,
 } from "../../lib/supabase";
-import { useAuth } from "./AuthContext"; // Import the useAuth hook
+import { useAuth } from "./AuthContext";
 
 const AppContext = createContext();
 
@@ -30,7 +37,7 @@ export const MotionH1 = motion.h1;
 export const MotionP = motion.p;
 
 export const AppProvider = ({ children }) => {
-  const { user, loading: authLoading, profile } = useAuth(); // Get auth state from AuthContext
+  const { user, loading: authLoading, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -38,17 +45,15 @@ export const AppProvider = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = useState("en");
   const [isRTL, setIsRTL] = useState(false);
 
-  // Change language function
-  const changeLanguage = (lng) => {
+  const changeLanguage = useCallback((lng) => {
     i18n.changeLanguage(lng);
     setCurrentLanguage(lng);
     setIsRTL(lng === "ar");
     document.documentElement.lang = lng;
     document.documentElement.dir = lng === "ar" ? "rtl" : "ltr";
-  };
+  }, []);
 
-  // Data fetching functions
-  const fetchPublicServices = async () => {
+  const fetchPublicServices = useCallback(async () => {
     try {
       setLoading(true);
       const { services: fetchedServices, error } = await getPublicServices();
@@ -56,7 +61,6 @@ export const AppProvider = ({ children }) => {
       setServices(fetchedServices || []);
     } catch (error) {
       console.error("Failed to fetch public services:", error);
-      // Fallback data
       setServices([
         { id: "1", name: "Basic Service", price: 100, is_active: true },
         { id: "2", name: "Premium Service", price: 200, is_active: true },
@@ -64,9 +68,9 @@ export const AppProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     try {
       setLoading(true);
       const { services: fetchedServices, error } = await getServices();
@@ -78,34 +82,8 @@ export const AppProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
-  const createOrder = async (orderData) => {
-    try {
-        if (!user) throw new Error("You must be logged in to create an order");
-
-        setLoading(true);
-        const { data, error } = await supabase
-            .from('orders')
-            .insert([{
-                service_id: orderData.service_id,
-                user_id: orderData.user_id, // Ensure user_id is included
-                status: orderData.status,
-                details: orderData.details
-            }])
-            .select()
-            .single();
-
-        if (error) throw error;
-        await fetchOrders();
-        return data;
-    } catch (error) {
-        console.error("Failed to create order:", error);
-        throw error;
-    } finally {
-        setLoading(false);
-    }
-};
-  const fetchOrders = async () => {
+  }, []);
+  const fetchOrders = useCallback(async () => {
     try {
       if (!user) return;
 
@@ -119,11 +97,43 @@ export const AppProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const fetchAllUsers = async () => {
+  const createOrder = useCallback(
+    async (orderData) => {
+      try {
+        if (!user) throw new Error("You must be logged in to create an order");
+
+        setLoading(true);
+        const { data, error } = await supabase
+          .from("orders")
+          .insert([
+            {
+              service_id: orderData.service_id,
+              user_id: orderData.user_id,
+              status: orderData.status,
+              details: orderData.details,
+            },
+          ])
+          .select()
+          .single();
+
+        if (error) throw error;
+        await fetchOrders();
+        return data;
+      } catch (error) {
+        console.error("Failed to create order:", error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user, fetchOrders]
+  );
+
+  const fetchAllUsers = useCallback(async () => {
     try {
-      if (!user || profile?.role !== 'admin') return;
+      if (!user || profile?.role !== "admin") return;
 
       setLoading(true);
       const { users: fetchedUsers, error } = await getSupabaseAllUsers();
@@ -135,76 +145,133 @@ export const AppProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, profile]);
 
-  const updateProfile = async (updates) => {
-    try {
-      if (!user) throw new Error("You must be logged in to update your profile");
+  const updateProfile = useCallback(
+    async (updates) => {
+      try {
+        if (!user)
+          throw new Error("You must be logged in to update your profile");
 
-      setLoading(true);
-      
-      // Update public.users
-      const { user: updatedUser, error } = await updateUserProfile(user.id, updates);
-      if (error) throw error;
+        setLoading(true);
+        const { user: updatedUser, error } = await updateUserProfile(
+          user.id,
+          updates
+        );
+        if (error) throw error;
 
-      return updatedUser;
-    } catch (error) {
-      console.error("Failed to update profile:", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
+        return updatedUser;
+      } catch (error) {
+        console.error("Failed to update profile:", error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user]
+  );
 
-  // Initialize on first load
   useEffect(() => {
     changeLanguage("en");
-    
-    // Load public data initially
     fetchPublicServices();
-  }, []);
+  }, [changeLanguage, fetchPublicServices]);
 
-  // Update data when user changes
   useEffect(() => {
     if (user) {
       fetchServices();
       fetchOrders();
-      if (profile?.role === 'admin') {
+      if (profile?.role === "admin") {
         fetchAllUsers();
       }
     } else {
       setOrders([]);
       setUsers([]);
-      fetchPublicServices(); // Load public services when logged out
+      fetchPublicServices();
     }
-  }, [user, profile]);
+  }, [
+    user,
+    profile,
+    fetchServices,
+    fetchOrders,
+    fetchAllUsers,
+    fetchPublicServices,
+  ]);
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === "visible") {
+        // Optionally re-fetch session or auth user
+        await supabase.auth
+          .getSession()
+          .then(({ data }) => {
+            if (!data?.session) {
+              window.location.reload(); // session is gone, force reload to reset app
+            } else {
+              // Re-fetch things if session is valid
+              if (user) {
+                fetchServices();
+                fetchOrders();
+                if (profile?.role === "admin") {
+                  fetchAllUsers();
+                }
+              }
+            }
+          })
+          .catch(() => {
+            window.location.reload(); // fail-safe
+          });
+      }
+    };
 
-  return (
-    <AppContext.Provider
-      value={{
-        user: user ? { ...user, ...profile, role: profile?.role || 'client' } : null,
-        loading: loading || authLoading,
-        services,
-        orders,
-        users,
-        currentLanguage,
-        isRTL,
-        changeLanguage,
-        createOrder,
-        getOrders: fetchOrders,
-        getAllUsers: fetchAllUsers,
-        getServices: fetchServices,
-        updateProfile,
-        fadeIn,
-        slideUp,
-        MotionDiv,
-        MotionH1,
-        MotionP,
-      }}
-    >
-      {children}
-    </AppContext.Provider>
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [user, profile, fetchOrders, fetchServices, fetchAllUsers]);
+
+  const value = useMemo(
+    () => ({
+      user: user
+        ? { ...user, ...profile, role: profile?.role || "client" }
+        : null,
+      loading: loading || authLoading,
+      services,
+      orders,
+      users,
+      currentLanguage,
+      isRTL,
+      changeLanguage,
+      createOrder,
+      getOrders: fetchOrders,
+      getAllUsers: fetchAllUsers,
+      getServices: fetchServices,
+      updateProfile,
+      fadeIn,
+      slideUp,
+      MotionDiv,
+      MotionH1,
+      MotionP,
+    }),
+    [
+      user,
+      profile,
+      loading,
+      authLoading,
+      services,
+      orders,
+      users,
+      currentLanguage,
+      isRTL,
+      changeLanguage,
+      createOrder,
+      fetchOrders,
+      fetchAllUsers,
+      fetchServices,
+      updateProfile,
+    ]
   );
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
 export const useAppContext = () => {

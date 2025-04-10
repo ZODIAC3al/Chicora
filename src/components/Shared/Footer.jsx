@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import i18n from '../../i18n';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -12,7 +13,7 @@ const Footer = () => {
           {/* Company Info */}
           <div>
             <h3 className="text-xl font-bold mb-4">{t('footer.about')}</h3>
-            <p className="text-gray-400">
+            <p className="text-gray-400 text-justify">
               {t('about.description', {
                 defaultValue: "Professional dry cleaning services with fast turnaround times and exceptional customer service."
               })}
@@ -32,36 +33,36 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4">{t('footer.quickLinks', { defaultValue: "Quick Links" })}</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/services" className="flex items-center text-gray-400 hover:text-white transition-colors">
+                <Link to="/services" className="flex items-center text-gray-400 hover:text-white transition-colors">
                   <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                   {t('navbar.services')}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/pricing" className="flex items-center text-gray-400 hover:text-white transition-colors">
+                <Link to="/pricing" className="flex items-center text-gray-400 hover:text-white transition-colors">
                   <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                   {t('pricing.title', { defaultValue: "Pricing" })}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/about" className="flex items-center text-gray-400 hover:text-white transition-colors">
+                <Link to="/about" className="flex items-center text-gray-400 hover:text-white transition-colors">
                   <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                   {t('footer.about')}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/contact" className="flex items-center text-gray-400 hover:text-white transition-colors">
+                <Link to="/contact" className="flex items-center text-gray-400 hover:text-white transition-colors">
                   <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                   {t('footer.contact')}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -121,15 +122,15 @@ const Footer = () => {
             </div>
             
             <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-              <a href="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">
+              <Link to="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">
                 {t('footer.privacy')}
-              </a>
-              <a href="/terms" className="text-sm text-gray-400 hover:text-white transition-colors">
+              </Link>
+              <Link to="/terms" className="text-sm text-gray-400 hover:text-white transition-colors">
                 {t('footer.terms')}
-              </a>
-              <a href="/sitemap" className="text-sm text-gray-400 hover:text-white transition-colors">
+              </Link>
+              <Link to="/sitemap" className="text-sm text-gray-400 hover:text-white transition-colors">
                 {t('footer.sitemap', { defaultValue: "Sitemap" })}
-              </a>
+              </Link>
             </div>
           </div>
         </div>

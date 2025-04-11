@@ -40,7 +40,7 @@ i18n.use(initReactI18next).init({
           noResults: "No results found",
           createdAt: "Created at",
           updatedAt: "Updated at",
-          status: "Status"
+          status: "Status",
         },
 
         // App-wide
@@ -52,7 +52,7 @@ i18n.use(initReactI18next).init({
           success: "Success!",
           notFound: "Page not found",
           goHome: "Go back home",
-          welcome: "Welcome"
+          welcome: "Welcome",
         },
 
         // Navbar
@@ -70,7 +70,7 @@ i18n.use(initReactI18next).init({
           settings: "Settings",
           notifications: "Notifications",
           darkMode: "Dark Mode",
-          lightMode: "Light Mode"
+          lightMode: "Light Mode",
         },
 
         // Auth
@@ -101,7 +101,8 @@ i18n.use(initReactI18next).init({
           errors: {
             invalidEmail: "Please enter a valid email address",
             passwordLength: "Password must be at least 8 characters",
-            passwordComplexity: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+            passwordComplexity:
+              "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
             emailRequired: "Email is required",
             nameRequired: "Full name is required",
             passwordRequired: "Password is required",
@@ -110,46 +111,59 @@ i18n.use(initReactI18next).init({
             userExists: "User with this email already exists",
             weakPassword: "Password is too weak",
             default: "An error occurred. Please try again",
-            resetPasswordSuccess: "Password reset email sent successfully"
-          }
+            resetPasswordSuccess: "Password reset email sent successfully",
+          },
         },
 
         // About Page
         about: {
           title: "About Our Dry Cleaning Service",
-          subtitle: "Discover our commitment to quality and customer satisfaction",
+          subtitle:
+            "Discover our commitment to quality and customer satisfaction",
           missionTitle: "Our Mission",
-          missionText: "To provide exceptional dry cleaning services with a focus on quality, convenience, and environmental responsibility.",
+          missionText:
+            "To provide exceptional dry cleaning services with a focus on quality, convenience, and environmental responsibility.",
           visionTitle: "Our Vision",
-          visionText: "To become the most trusted dry cleaning service in the region by consistently exceeding customer expectations.",
+          visionText:
+            "To become the most trusted dry cleaning service in the region by consistently exceeding customer expectations.",
           valuesTitle: "Our Values",
           values: {
             quality: "Quality",
             qualityDesc: "We never compromise on the quality of our services",
             integrity: "Integrity",
-            integrityDesc: "We conduct our business with honesty and transparency",
+            integrityDesc:
+              "We conduct our business with honesty and transparency",
             innovation: "Innovation",
-            innovationDesc: "We continuously improve our processes and services",
+            innovationDesc:
+              "We continuously improve our processes and services",
             sustainability: "Sustainability",
-            sustainabilityDesc: "We care for the environment in all our operations",
+            sustainabilityDesc:
+              "We care for the environment in all our operations",
             customerFocus: "Customer Focus",
-            customerFocusDesc: "Our customers are at the heart of everything we do"
+            customerFocusDesc:
+              "Our customers are at the heart of everything we do",
           },
           historyTitle: "Our History",
-          historyText: "Founded in 2010, we started as a small neighborhood dry cleaner and have grown into a trusted service provider with multiple locations across the city.",
+          historyText:
+            "Founded in 2010, we started as a small neighborhood dry cleaner and have grown into a trusted service provider with multiple locations across the city.",
           features: {
+            title: "Alexandria-Wide Delivery",
+
             quality: {
               title: "Premium Quality",
-              description: "We use only the finest cleaning solutions and techniques to care for your garments."
+              description:
+                "We use only the finest cleaning solutions and techniques to care for your garments.",
             },
             eco: {
               title: "Eco-Friendly",
-              description: "Our environmentally friendly processes ensure a clean planet along with clean clothes."
+              description:
+                "Our environmentally friendly processes ensure a clean planet along with clean clothes.",
             },
             delivery: {
               title: "Fast Delivery",
-              description: "Enjoy quick turnaround times with our efficient pickup and delivery service."
-            }
+              description:
+                "Enjoy quick turnaround times with our efficient pickup and delivery service.",
+            },
           },
           team: {
             title: "Meet Our Team",
@@ -157,57 +171,64 @@ i18n.use(initReactI18next).init({
             member1: {
               name: "John Smith",
               position: "Founder & CEO",
-              bio: "With over 20 years in the industry, John founded the company with a vision to revolutionize dry cleaning services."
+              bio: "With over 20 years in the industry, John founded the company with a vision to revolutionize dry cleaning services.",
             },
             member2: {
               name: "Sarah Johnson",
               position: "Head of Operations",
-              bio: "Sarah ensures our operations run smoothly and our quality standards are consistently met."
+              bio: "Sarah ensures our operations run smoothly and our quality standards are consistently met.",
             },
             member3: {
               name: "Michael Brown",
               position: "Customer Service",
-              bio: "Michael leads our customer service team with a focus on exceptional customer experiences."
+              bio: "Michael leads our customer service team with a focus on exceptional customer experiences.",
             },
             member4: {
               name: "Emily Davis",
               position: "Quality Control",
-              bio: "Emily oversees our quality control processes to maintain our high standards."
-            }
+              bio: "Emily oversees our quality control processes to maintain our high standards.",
+            },
           },
           stats: {
             title: "By The Numbers",
             years: "Years in Business",
             customers: "Happy Customers",
             locations: "Locations",
-            items: "Items Cleaned Monthly"
+            items: "Items Cleaned Monthly",
           },
           testimonials: {
             title: "What Our Customers Say",
             subtitle: "Don't just take our word for it",
             testimonial1: {
-              quote: "The best dry cleaning service I've ever used. My clothes always come back looking brand new!",
-              author: "David Wilson"
+              quote:
+                "Nile Dry Cleaners saved my favorite galabeya after a wedding disaster. Their stain removal is magical!",
+              author: "Mona Khalil",
+              role: "Zamalek Resident",
             },
             testimonial2: {
-              quote: "Fast, reliable, and eco-friendly. I wouldn't trust my clothes with anyone else.",
-              author: "Maria Garcia"
+              quote:
+                "As a business professional, I trust them with my suits. Always perfect, always on time.",
+              author: "Omar Farouk",
+              role: "Maadi Customer",
             },
             testimonial3: {
-              quote: "Their attention to detail is unmatched. Highly recommend their premium service.",
-              author: "James Lee"
+              quote:
+                "Their pickup service is a lifesaver for busy moms like me. Quality service with Egyptian warmth.",
+              author: "Nadia Ibrahim",
+              role: "Heliopolis Customer",
             },
             cta: {
               title: "Ready to Experience the Difference?",
-              button: "Place Your First Order"
-            }
-          }
+              button: "Place Your First Order",
+            },
+          },
         },
 
         // Pricing Page
         pricing: {
           title: "Simple, Transparent Pricing",
-          subtitle: "Choose the perfect plan for your laundry needs. No hidden fees, no surprises.",
+          subtitle:
+            "Choose the perfect plan for your laundry needs. No hidden fees, no surprises.",
           perMonth: "month",
           mostPopular: "Most Popular",
           choosePlan: "Choose Plan",
@@ -219,8 +240,8 @@ i18n.use(initReactI18next).init({
               features: [
                 "5 items per month",
                 "Standard detergent",
-                "24-hour turnaround"
-              ]
+                "24-hour turnaround",
+              ],
             },
             standard: {
               name: "Standard Care",
@@ -230,8 +251,8 @@ i18n.use(initReactI18next).init({
                 "15 items per month",
                 "Premium detergent",
                 "Eco-friendly cleaning",
-                "12-hour express option"
-              ]
+                "12-hour express option",
+              ],
             },
             premium: {
               name: "Premium Service",
@@ -242,37 +263,41 @@ i18n.use(initReactI18next).init({
                 "Organic detergent",
                 "Same-day service",
                 "Special fabric care",
-                "Free pickup & delivery"
-              ]
-            }
+                "Free pickup & delivery",
+              ],
+            },
           },
           faq: {
             title: "Frequently Asked Questions",
             questions: [
               {
                 question: "What's included in each plan?",
-                answer: "Each plan includes professional cleaning with quality detergents. Higher tiers offer faster turnaround and additional services."
+                answer:
+                  "Each plan includes professional cleaning with quality detergents. Higher tiers offer faster turnaround and additional services.",
               },
               {
                 question: "Can I change plans later?",
-                answer: "Yes, you can upgrade or downgrade your plan at any time through your account settings."
+                answer:
+                  "Yes, you can upgrade or downgrade your plan at any time through your account settings.",
               },
               {
                 question: "How does billing work?",
-                answer: "We charge your card monthly on the same date you signed up. You'll receive a receipt by email each month."
+                answer:
+                  "We charge your card monthly on the same date you signed up. You'll receive a receipt by email each month.",
               },
               {
                 question: "Is there a contract?",
-                answer: "No contracts. Cancel anytime with no penalties."
-              }
-            ]
-          }
+                answer: "No contracts. Cancel anytime with no penalties.",
+              },
+            ],
+          },
         },
 
         // Contact Page
         contact: {
           title: "Get in Touch",
-          subtitle: "We'd love to hear from you! Reach out for any questions or special requests.",
+          subtitle:
+            "We'd love to hear from you! Reach out for any questions or special requests.",
           form: {
             title: "Send Us a Message",
             name: "Your Name",
@@ -281,7 +306,7 @@ i18n.use(initReactI18next).init({
             emailPlaceholder: "Enter your email",
             message: "Your Message",
             messagePlaceholder: "How can we help you?",
-            submit: "Send Message"
+            submit: "Send Message",
           },
           info: {
             title: "Contact Information",
@@ -294,14 +319,14 @@ i18n.use(initReactI18next).init({
             hoursTitle: "Business Hours",
             hours: {
               weekdays: "Monday - Friday: 8:00 AM - 6:00 PM",
-              weekend: "Saturday: 9:00 AM - 4:00 PM"
-            }
+              weekend: "Saturday: 9:00 AM - 4:00 PM",
+            },
           },
           map: {
             title: "Find Us on Map",
             placeholderTitle: "Our Location",
-            placeholderText: "Map integration coming soon"
-          }
+            placeholderText: "Map integration coming soon",
+          },
         },
 
         // Home Page
@@ -309,32 +334,40 @@ i18n.use(initReactI18next).init({
           professional: "Professional",
           dryCleaning: "Dry Cleaning",
           service: "Service",
-          description: "We provide high-quality dry cleaning services with fast turnaround times and exceptional customer service.",
+          description:
+            "We provide high-quality dry cleaning services with fast turnaround times and exceptional customer service.",
           placeOrder: "Place Order",
           viewServices: "View Services",
           services: "Services",
           popularServices: "Our Popular Services",
           process: "Process",
           howItWorks: "How It Works",
-          placeOrderDesc: "Select your service and place your order online in just a few clicks.",
+          placeOrderDesc:
+            "Select your service and place your order online in just a few clicks.",
           weCollect: "We Collect",
-          weCollectDesc: "We'll pick up your items at your preferred time and location.",
+          weCollectDesc:
+            "We'll pick up your items at your preferred time and location.",
           deliverBack: "Deliver Back",
-          deliverBackDesc: "Your clean items will be delivered back to you on time.",
+          deliverBackDesc:
+            "Your clean items will be delivered back to you on time.",
           ready: "Ready to get started?",
           placeFirstOrder: "Place your first order today!",
-          joinCustomers: "Join thousands of satisfied customers who trust us with their laundry needs.",
+          joinCustomers:
+            "Join thousands of satisfied customers who trust us with their laundry needs.",
           placeNewOrder: "Place New Order",
           signUpNow: "Sign Up Now",
           standardService: "Standard Service",
           delivery24: "24-hour delivery",
-          standardServiceDesc: "Our standard service with next-day delivery for your everyday laundry needs.",
+          standardServiceDesc:
+            "Our standard service with next-day delivery for your everyday laundry needs.",
           expressService: "Express Service",
           sameDay: "Same-day delivery",
-          expressServiceDesc: "Get your laundry back the same day with our express service.",
+          expressServiceDesc:
+            "Get your laundry back the same day with our express service.",
           premiumService: "Premium Service",
           delivery48: "48-hour delivery",
-          premiumServiceDesc: "Special care for delicate and high-end garments with our premium service."
+          premiumServiceDesc:
+            "Special care for delicate and high-end garments with our premium service.",
         },
 
         // Services Page
@@ -353,7 +386,8 @@ i18n.use(initReactI18next).init({
           allServices: "All Services",
           price: "Price",
           deliveryTime: "Delivery Time",
-          defaultDescription: "Professional cleaning service with attention to detail"
+          defaultDescription:
+            "Professional cleaning service with attention to detail",
         },
 
         // Order Form
@@ -376,23 +410,25 @@ i18n.use(initReactI18next).init({
           daysDelivery: "days delivery",
           delivery: "Delivery in {{days}} days",
           specialInstructions: "Special Instructions",
-          specialInstructionsPlaceholder: "Any special care instructions or notes for our team...",
+          specialInstructionsPlaceholder:
+            "Any special care instructions or notes for our team...",
           orderSummary: "Order Summary",
           successTitle: "Order Placed Successfully!",
-          successMessage: "Your order has been received and is being processed. You'll receive a confirmation email shortly.",
+          successMessage:
+            "Your order has been received and is being processed. You'll receive a confirmation email shortly.",
           whatsNext: "What's Next?",
           nextSteps: [
             "We'll contact you to confirm your order details",
             "Our team will pick up your laundry at the scheduled time",
             "Your clothes will be cleaned with care",
-            "We'll deliver your laundry back to you on time"
+            "We'll deliver your laundry back to you on time",
           ],
           whyChooseUs: "Why Choose Our Service?",
           benefits: [
             "Professional cleaning with eco-friendly products",
             "Fast turnaround time",
             "Free pickup and delivery",
-            "Satisfaction guaranteed"
+            "Satisfaction guaranteed",
           ],
           needHelp: "Need Help?",
           contactUs: "Contact our support team for any questions",
@@ -400,8 +436,8 @@ i18n.use(initReactI18next).init({
             "Secure Payment",
             "24/7 Support",
             "Quality Guarantee",
-            "Satisfaction Guaranteed"
-          ]
+            "Satisfaction Guaranteed",
+          ],
         },
 
         // Order History
@@ -409,7 +445,7 @@ i18n.use(initReactI18next).init({
           title: "Order History",
           subtitle: "View your past and current orders",
           orderDetails: "Order Details",
-        search: "Search orders...",
+          search: "Search orders...",
 
           filter: "Filter by status:",
           all: "All",
@@ -458,13 +494,13 @@ i18n.use(initReactI18next).init({
           paymentMethod: "Payment Method",
           shippingAddress: "Shipping Address",
           billingAddress: "Billing Address",
-          orderSummary: "Order Summary"
+          orderSummary: "Order Summary",
         },
 
         // Profile
         profile: {
-        profile: "Profile",  
-        orders: "Orders",    
+          profile: "Profile",
+          orders: "Orders",
           title: "My Profile",
           personalInfo: "Personal Information",
           orderHistory: "Order History",
@@ -495,7 +531,7 @@ i18n.use(initReactI18next).init({
           membership: {
             standard: "Standard",
             premium: "Premium",
-            vip: "VIP"
+            vip: "VIP",
           },
           languageSettings: "Language Settings",
           notificationSettings: "Notification Settings",
@@ -505,7 +541,8 @@ i18n.use(initReactI18next).init({
           requestDataExport: "Request Data Export",
           deleteAccount: "Delete Account",
           areYouSure: "Are you sure?",
-          deleteAccountWarning: "This will permanently delete your account and all associated data.",
+          deleteAccountWarning:
+            "This will permanently delete your account and all associated data.",
           changePassword: "Change Password",
           currentPassword: "Current Password",
           newPassword: "New Password",
@@ -518,7 +555,7 @@ i18n.use(initReactI18next).init({
           default: "Default",
           setAsDefault: "Set as Default",
           noPaymentMethods: "No payment methods added",
-          profileUpdated: "Profile updated successfully"
+          profileUpdated: "Profile updated successfully",
         },
         // Dashboard
         dashboard: {
@@ -619,7 +656,7 @@ i18n.use(initReactI18next).init({
             cancelledOrders: "Cancelled",
             totalSpent: "Total Spent",
             savings: "Savings",
-            points: "Loyalty Points"
+            points: "Loyalty Points",
           },
           notifications: "Notifications",
           messages: "Messages",
@@ -628,7 +665,7 @@ i18n.use(initReactI18next).init({
           loyaltyProgram: "Loyalty Program",
           referFriend: "Refer a Friend",
           help: "Help Center",
-          feedback: "Feedback"
+          feedback: "Feedback",
         },
 
         // Admin
@@ -701,12 +738,12 @@ i18n.use(initReactI18next).init({
             roles: {
               admin: "Admin",
               employee: "Employee",
-              client: "Client"
+              client: "Client",
             },
             statuses: {
               active: "Active",
-              inactive: "Inactive"
-            }
+              inactive: "Inactive",
+            },
           },
           settings: {
             title: "Settings",
@@ -717,7 +754,7 @@ i18n.use(initReactI18next).init({
             businessHours: "Business Hours",
             deliverySettings: "Delivery Settings",
             saveChanges: "Save Changes",
-            resetDefaults: "Reset to Defaults"
+            resetDefaults: "Reset to Defaults",
           },
           reports: {
             title: "Reports",
@@ -728,8 +765,8 @@ i18n.use(initReactI18next).init({
             export: "Export Report",
             generate: "Generate Report",
             dateRange: "Date Range",
-            filter: "Filter"
-          }
+            filter: "Filter",
+          },
         },
 
         // Orders Management
@@ -755,7 +792,7 @@ i18n.use(initReactI18next).init({
           unknownUser: "Unknown User",
           unknownService: "Unknown Service",
           updateStatus: "Update Status",
-          deleteConfirm: "Are you sure you want to delete this order?"
+          deleteConfirm: "Are you sure you want to delete this order?",
         },
 
         // User Management
@@ -780,7 +817,7 @@ i18n.use(initReactI18next).init({
           noUsersFound: "No users found",
           userCreated: "User created successfully",
           userUpdated: "User updated successfully",
-          userDeleted: "User deleted successfully"
+          userDeleted: "User deleted successfully",
         },
 
         // Employee Dashboard
@@ -794,7 +831,7 @@ i18n.use(initReactI18next).init({
             efficiency: "Efficiency Rating",
             attendance: "Attendance Record",
             upcoming: "Upcoming Schedule",
-            recentActivity: "Recent Activity"
+            recentActivity: "Recent Activity",
           },
           orders: {
             process: "Process Order",
@@ -804,7 +841,7 @@ i18n.use(initReactI18next).init({
             priority: "Priority",
             high: "High",
             medium: "Medium",
-            low: "Low"
+            low: "Low",
           },
           tasks: {
             title: "Task Management",
@@ -813,8 +850,8 @@ i18n.use(initReactI18next).init({
             completed: "Completed",
             overdue: "Overdue",
             dueToday: "Due Today",
-            markComplete: "Mark Complete"
-          }
+            markComplete: "Mark Complete",
+          },
         },
 
         // Client Portal
@@ -827,7 +864,7 @@ i18n.use(initReactI18next).init({
             addressBook: "Address Book",
             paymentMethods: "Payment Methods",
             notifications: "Notifications",
-            referrals: "Referral Program"
+            referrals: "Referral Program",
           },
           loyalty: {
             points: "Loyalty Points",
@@ -837,8 +874,8 @@ i18n.use(initReactI18next).init({
             tier: "Membership Tier",
             silver: "Silver",
             gold: "Gold",
-            platinum: "Platinum"
-          }
+            platinum: "Platinum",
+          },
         },
 
         // Calendar
@@ -860,7 +897,7 @@ i18n.use(initReactI18next).init({
           daily: "Daily",
           weekly: "Weekly",
           monthly: "Monthly",
-          yearly: "Yearly"
+          yearly: "Yearly",
         },
 
         // File Upload
@@ -873,7 +910,7 @@ i18n.use(initReactI18next).init({
           uploadSuccess: "Upload successful",
           uploadFailed: "Upload failed",
           remove: "Remove",
-          preview: "Preview"
+          preview: "Preview",
         },
 
         // Data Tables
@@ -888,7 +925,7 @@ i18n.use(initReactI18next).init({
           delete: "Delete",
           view: "View",
           sort: "Sort",
-          filter: "Filter"
+          filter: "Filter",
         },
 
         // Form Validation
@@ -908,7 +945,7 @@ i18n.use(initReactI18next).init({
           passwordReq2: "1 uppercase letter",
           passwordReq3: "1 lowercase letter",
           passwordReq4: "1 number",
-          passwordReq5: "1 special character"
+          passwordReq5: "1 special character",
         },
 
         // Status
@@ -925,7 +962,7 @@ i18n.use(initReactI18next).init({
           archived: "Archived",
           verified: "Verified",
           unverified: "Unverified",
-          expired: "Expired"
+          expired: "Expired",
         },
 
         // Notifications
@@ -940,7 +977,7 @@ i18n.use(initReactI18next).init({
           passwordUpdated: "Password updated successfully!",
           errorOccurred: "An error occurred. Please try again.",
           unauthorized: "You need to login to access this page",
-          forbidden: "You don't have permission to access this resource"
+          forbidden: "You don't have permission to access this resource",
         },
 
         // Service Types
@@ -954,7 +991,7 @@ i18n.use(initReactI18next).init({
           curtain_cleaning: "Curtain Cleaning",
           leather_cleaning: "Leather Cleaning",
           stain_removal: "Stain Removal",
-          ironing: "Ironing Service"
+          ironing: "Ironing Service",
         },
 
         // Footer
@@ -971,9 +1008,9 @@ i18n.use(initReactI18next).init({
           rightsReserved: "All rights reserved",
           privacy: "Privacy Policy",
           terms: "Terms of Service",
-          sitemap: "Sitemap"
-        }
-      }
+          sitemap: "Sitemap",
+        },
+      },
     },
     ar: {
       translation: {
@@ -1012,7 +1049,7 @@ i18n.use(initReactI18next).init({
           noResults: "لا توجد نتائج",
           createdAt: "تم الإنشاء في",
           updatedAt: "تم التحديث في",
-          status: "الحالة"
+          status: "الحالة",
         },
 
         // App-wide
@@ -1024,7 +1061,7 @@ i18n.use(initReactI18next).init({
           success: "نجاح!",
           notFound: "الصفحة غير موجودة",
           goHome: "العودة للصفحة الرئيسية",
-          welcome: "مرحباً"
+          welcome: "مرحباً",
         },
 
         // Navbar
@@ -1042,7 +1079,7 @@ i18n.use(initReactI18next).init({
           settings: "الإعدادات",
           notifications: "الإشعارات",
           darkMode: "الوضع المظلم",
-          lightMode: "الوضع المضيء"
+          lightMode: "الوضع المضيء",
         },
 
         // Auth
@@ -1073,17 +1110,19 @@ i18n.use(initReactI18next).init({
           errors: {
             invalidEmail: "الرجاء إدخال بريد إلكتروني صالح",
             passwordLength: "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
-            passwordComplexity: "يجب أن تحتوي كلمة المرور على حرف كبير وحرف صغير ورقم ورمز خاص واحد على الأقل",
+            passwordComplexity:
+              "يجب أن تحتوي كلمة المرور على حرف كبير وحرف صغير ورقم ورمز خاص واحد على الأقل",
             emailRequired: "البريد الإلكتروني مطلوب",
             nameRequired: "الاسم الكامل مطلوب",
             passwordRequired: "كلمة المرور مطلوبة",
             confirmPasswordRequired: "الرجاء تأكيد كلمة المرور",
-            authFailed: "فشل المصادقة. الرجاء التحقق من بيانات الاعتماد الخاصة بك",
+            authFailed:
+              "فشل المصادقة. الرجاء التحقق من بيانات الاعتماد الخاصة بك",
             userExists: "يوجد مستخدم بهذا البريد الإلكتروني بالفعل",
             weakPassword: "كلمة المرور ضعيفة جدًا",
             default: "حدث خطأ. الرجاء المحاولة مرة أخرى",
-            resetPasswordSuccess: "تم إرسال بريد إعادة تعيين كلمة المرور بنجاح"
-          }
+            resetPasswordSuccess: "تم إرسال بريد إعادة تعيين كلمة المرور بنجاح",
+          },
         },
 
         // About Page
@@ -1091,9 +1130,11 @@ i18n.use(initReactI18next).init({
           title: "حول خدمة التنظيف الجاف لدينا",
           subtitle: "اكتشف التزامنا بالجودة ورضا العملاء",
           missionTitle: "مهمتنا",
-          missionText: "توفير خدمات تنظيف جاف استثنائية مع التركيز على الجودة والراحة والمسؤولية البيئية.",
+          missionText:
+            "توفير خدمات تنظيف جاف استثنائية مع التركيز على الجودة والراحة والمسؤولية البيئية.",
           visionTitle: "رؤيتنا",
-          visionText: "أن نصبح خدمة التنظيف الجاف الأكثر ثقة في المنطقة من خلال تجاوز توقعات العملاء باستمرار.",
+          visionText:
+            "أن نصبح خدمة التنظيف الجاف الأكثر ثقة في المنطقة من خلال تجاوز توقعات العملاء باستمرار.",
           valuesTitle: "قيمنا",
           values: {
             quality: "الجودة",
@@ -1105,23 +1146,28 @@ i18n.use(initReactI18next).init({
             sustainability: "الاستدامة",
             sustainabilityDesc: "نحن نهتم بالبيئة في جميع عملياتنا",
             customerFocus: "التركيز على العميل",
-            customerFocusDesc: "عملاؤنا هم في قلب كل ما نقوم به"
+            customerFocusDesc: "عملاؤنا هم في قلب كل ما نقوم به",
           },
           historyTitle: "تاريخنا",
-          historyText: "تأسست في عام 2010، بدأنا كمنظف جاف صغير في الحي ونمت لتصبح مزود خدمة موثوق به مع مواقع متعددة في جميع أنحاء المدينة.",
+          historyText:
+            "تأسست في عام 2010، بدأنا كمنظف جاف صغير في الحي ونمت لتصبح مزود خدمة موثوق به مع مواقع متعددة في جميع أنحاء المدينة.",
           features: {
+            title: "توصيل في جميع أنحاء الاسكندريه",
             quality: {
               title: "جودة ممتازة",
-              description: "نستخدم فقط أفضل حلول التنظيف والتقنيات للعناية بملابسك."
+              description:
+                "نستخدم فقط أفضل حلول التنظيف والتقنيات للعناية بملابسك.",
             },
             eco: {
               title: "صديق للبيئة",
-              description: "عملياتنا الصديقة للبيئة تضمن كوكبًا نظيفًا مع ملابس نظيفة."
+              description:
+                "عملياتنا الصديقة للبيئة تضمن كوكبًا نظيفًا مع ملابس نظيفة.",
             },
             delivery: {
               title: "توصيل سريع",
-              description: "استمتع بأوقات استجابة سريعة مع خدمة الاستلام والتوصيل الفعالة لدينا."
-            }
+              description:
+                "استمتع بأوقات استجابة سريعة مع خدمة الاستلام والتوصيل الفعالة لدينا.",
+            },
           },
           team: {
             title: "تعرف على فريقنا",
@@ -1129,57 +1175,65 @@ i18n.use(initReactI18next).init({
             member1: {
               name: "جون سميث",
               position: "المؤسس والرئيس التنفيذي",
-              bio: "مع أكثر من 20 عامًا في المجال، أسس جون الشركة برؤية لإحداث ثورة في خدمات التنظيف الجاف."
+              bio: "مع أكثر من 20 عامًا في المجال، أسس جون الشركة برؤية لإحداث ثورة في خدمات التنظيف الجاف.",
             },
             member2: {
               name: "سارة جونسون",
               position: "رئيس العمليات",
-              bio: "تضمن سارة سير عملياتنا بسلاحة وأن معايير الجودة لدينا تتحقق باستمرار."
+              bio: "تضمن سارة سير عملياتنا بسلاحة وأن معايير الجودة لدينا تتحقق باستمرار.",
             },
             member3: {
               name: "مايكل براون",
               position: "خدمة العملاء",
-              bio: "يقود مايكل فريق خدمة العملاء لدينا مع التركيز على تجارب عملاء استثنائية."
+              bio: "يقود مايكل فريق خدمة العملاء لدينا مع التركيز على تجارب عملاء استثنائية.",
             },
             member4: {
               name: "إيميلي ديفيس",
               position: "مراقبة الجودة",
-              bio: "تشرف إيميلي على عمليات مراقبة الجودة لدينا للحفاظ على معاييرنا العالية."
-            }
+              bio: "تشرف إيميلي على عمليات مراقبة الجودة لدينا للحفاظ على معاييرنا العالية.",
+            },
           },
           stats: {
             title: "بالأرقام",
             years: "سنوات في العمل",
             customers: "عملاء سعداء",
             locations: "مواقع",
-            items: "عناصر يتم تنظيفها شهريًا"
+            items: "عناصر يتم تنظيفها شهريًا",
           },
+
           testimonials: {
             title: "ما يقوله عملاؤنا",
             subtitle: "لا تأخذ كلمتنا فقط",
             testimonial1: {
-              quote: "أفضل خدمة تنظيف جاف استخدمتها على الإطلاق. ملابسي تعود دائمًا وكأنها جديدة!",
-              author: "ديفيد ويلسون"
+              quote:
+                "نايل دراي كلين أنقذت غلابيتي المفضلة بعد كارثة حفل زفاف. إزالة البقع لديهم سحرية!",
+              author: "منى خليل",
+              role: "مقيمة في الزمالك",
             },
             testimonial2: {
-              quote: "سريعة وموثوقة وصديقة للبيئة. لن أثق بملابسي مع أي شخص آخر.",
-              author: "ماريا غارسيا"
+              quote:
+                "كشخص محترف، أثق بهم في تنظيف بدلاتي. دائمًا مثالية، دائمًا في الوقت المحدد.",
+              author: "عمر فاروق",
+              role: "عميل من المعادي",
             },
             testimonial3: {
-              quote: "انتباههم للتفاصيل لا مثيل له. أوصي بشدة بخدمتهم الممتازة.",
-              author: "جيمس لي"
+              quote:
+                "خدمة الاستلام الخاصة بهم منقذة للحياة للأمهات المشغولات مثلي. خدمة عالية الجودة مع دفء مصري.",
+              author: "نادية إبراهيم",
+              role: "عميلة من مصر الجديدة",
             },
             cta: {
               title: "هل أنت مستعد لتجربة الفرق؟",
-              button: "ضع طلبك الأول"
-            }
-          }
+              button: "ضع طلبك الأول",
+            },
+          },
         },
 
         // Pricing Page
         pricing: {
           title: "أسعار بسيطة وشفافة",
-          subtitle: "اختر الخطة المثالية لاحتياجات غسيل الملابس الخاصة بك. بدون رسوم خفية، بدون مفاجآت.",
+          subtitle:
+            "اختر الخطة المثالية لاحتياجات غسيل الملابس الخاصة بك. بدون رسوم خفية، بدون مفاجآت.",
           perMonth: "شهر",
           mostPopular: "الأكثر شعبية",
           choosePlan: "اختر الخطة",
@@ -1188,7 +1242,7 @@ i18n.use(initReactI18next).init({
               name: "الغسيل الأساسي",
               price: "٩٫٩٩ $",
               description: "تنظيف أساسي للملابس اليومية",
-              features: ["٥ قطع شهرياً", "منظف قياسي", "تسليم خلال ٢٤ ساعة"]
+              features: ["٥ قطع شهرياً", "منظف قياسي", "تسليم خلال ٢٤ ساعة"],
             },
             standard: {
               name: "العناية المعيارية",
@@ -1198,8 +1252,8 @@ i18n.use(initReactI18next).init({
                 "١٥ قطعة شهرياً",
                 "منظف ممتاز",
                 "تنظيف صديق للبيئة",
-                "خيار سريع خلال ١٢ ساعة"
-              ]
+                "خيار سريع خلال ١٢ ساعة",
+              ],
             },
             premium: {
               name: "الخدمة المميزة",
@@ -1210,37 +1264,41 @@ i18n.use(initReactI18next).init({
                 "منظف عضوي",
                 "خدمة في نفس اليوم",
                 "عناية خاصة بالأقمشة",
-                "استلام وتسليم مجاني"
-              ]
-            }
+                "استلام وتسليم مجاني",
+              ],
+            },
           },
           faq: {
             title: "أسئلة شائعة",
             questions: [
               {
                 question: "ما المدرج في كل خطة؟",
-                answer: "تتضمن كل خطة تنظيفًا احترافيًا باستخدام منظفات عالية الجودة. تقدم المستويات الأعلى خدمة أسرع وخدمات إضافية."
+                answer:
+                  "تتضمن كل خطة تنظيفًا احترافيًا باستخدام منظفات عالية الجودة. تقدم المستويات الأعلى خدمة أسرع وخدمات إضافية.",
               },
               {
                 question: "هل يمكنني تغيير الخطة لاحقًا؟",
-                answer: "نعم، يمكنك الترقية أو التخفيض في خطتك في أي وقت من خلال إعدادات الحساب."
+                answer:
+                  "نعم، يمكنك الترقية أو التخفيض في خطتك في أي وقت من خلال إعدادات الحساب.",
               },
               {
                 question: "كيف يعمل الفوترة؟",
-                answer: "نحن نخصم من بطاقتك شهريًا في نفس التاريخ الذي سجلت فيه. ستصلك إيصالًا بالبريد الإلكتروني كل شهر."
+                answer:
+                  "نحن نخصم من بطاقتك شهريًا في نفس التاريخ الذي سجلت فيه. ستصلك إيصالًا بالبريد الإلكتروني كل شهر.",
               },
               {
                 question: "هل هناك عقد؟",
-                answer: "لا توجد عقود. يمكنك الإلغاء في أي وقت دون عقوبات."
-              }
-            ]
-          }
+                answer: "لا توجد عقود. يمكنك الإلغاء في أي وقت دون عقوبات.",
+              },
+            ],
+          },
         },
 
         // Contact Page
         contact: {
           title: "تواصل معنا",
-          subtitle: "نحن نتطلع لسماع منك! تواصل معنا لأي استفسارات أو طلبات خاصة.",
+          subtitle:
+            "نحن نتطلع لسماع منك! تواصل معنا لأي استفسارات أو طلبات خاصة.",
           form: {
             title: "أرسل لنا رسالة",
             name: "اسمك",
@@ -1249,7 +1307,7 @@ i18n.use(initReactI18next).init({
             emailPlaceholder: "أدخل بريدك الإلكتروني",
             message: "رسالتك",
             messagePlaceholder: "كيف يمكننا مساعدتك؟",
-            submit: "إرسال الرسالة"
+            submit: "إرسال الرسالة",
           },
           info: {
             title: "معلومات الاتصال",
@@ -1262,14 +1320,14 @@ i18n.use(initReactI18next).init({
             hoursTitle: "ساعات العمل",
             hours: {
               weekdays: "الإثنين - الجمعة: ٨ صباحاً - ٦ مساءً",
-              weekend: "السبت: ٩ صباحاً - ٤ مساءً"
-            }
+              weekend: "السبت: ٩ صباحاً - ٤ مساءً",
+            },
           },
           map: {
             title: "ابحث عنا على الخريطة",
             placeholderTitle: "موقعنا",
-            placeholderText: "خريطة التكامل قريباً"
-          }
+            placeholderText: "خريطة التكامل قريباً",
+          },
         },
 
         // Home Page
@@ -1277,7 +1335,8 @@ i18n.use(initReactI18next).init({
           professional: "احترافية",
           dryCleaning: "تنظيف جاف",
           service: "خدمة",
-          description: "نقدم خدمات تنظيف جاف عالية الجودة مع أوقات تسليم سريعة وخدمة عملاء استثنائية.",
+          description:
+            "نقدم خدمات تنظيف جاف عالية الجودة مع أوقات تسليم سريعة وخدمة عملاء استثنائية.",
           placeOrder: "تقديم طلب",
           viewServices: "عرض الخدمات",
           services: "الخدمات",
@@ -1291,18 +1350,21 @@ i18n.use(initReactI18next).init({
           deliverBackDesc: "سيتم تسليم العناصر النظيفة إليك في الوقت المحدد.",
           ready: "هل أنت مستعد للبدء؟",
           placeFirstOrder: "قدم طلبك الأول اليوم!",
-          joinCustomers: "انضم إلى الآلاف من العملاء الراضين الذين يثقون بنا في احتياجات غسيل ملابسهم.",
+          joinCustomers:
+            "انضم إلى الآلاف من العملاء الراضين الذين يثقون بنا في احتياجات غسيل ملابسهم.",
           placeNewOrder: "تقديم طلب جديد",
           signUpNow: "سجل الآن",
           standardService: "الخدمة القياسية",
           delivery24: "توصيل خلال 24 ساعة",
-          standardServiceDesc: "خدمتنا القياسية مع توصيل في اليوم التالي لاحتياجات غسيل الملابس اليومية.",
+          standardServiceDesc:
+            "خدمتنا القياسية مع توصيل في اليوم التالي لاحتياجات غسيل الملابس اليومية.",
           expressService: "خدمة سريعة",
           sameDay: "توصيل في نفس اليوم",
           expressServiceDesc: "احصل على غسيلك في نفس اليوم مع خدمتنا السريعة.",
           premiumService: "خدمة مميزة",
           delivery48: "توصيل خلال 48 ساعة",
-          premiumServiceDesc: "رعاية خاصة للملابس الحساسة والفاخرة مع خدمتنا المميزة."
+          premiumServiceDesc:
+            "رعاية خاصة للملابس الحساسة والفاخرة مع خدمتنا المميزة.",
         },
 
         // Services Page
@@ -1321,7 +1383,7 @@ i18n.use(initReactI18next).init({
           allServices: "جميع الخدمات",
           price: "السعر",
           deliveryTime: "وقت التوصيل",
-          defaultDescription: "خدمة تنظيف احترافية مع الاهتمام بالتفاصيل"
+          defaultDescription: "خدمة تنظيف احترافية مع الاهتمام بالتفاصيل",
         },
 
         // Order Form
@@ -1344,23 +1406,25 @@ i18n.use(initReactI18next).init({
           daysDelivery: "أيام التوصيل",
           delivery: "توصيل خلال {{days}} أيام",
           specialInstructions: "تعليمات خاصة",
-          specialInstructionsPlaceholder: "أي تعليمات خاصة أو ملاحظات لفريقنا...",
+          specialInstructionsPlaceholder:
+            "أي تعليمات خاصة أو ملاحظات لفريقنا...",
           orderSummary: "ملخص الطلب",
           successTitle: "تم تقديم الطلب بنجاح!",
-          successMessage: "تم استلام طلبك وهو قيد المعالجة. ستصلك رسالة تأكيد قريباً.",
+          successMessage:
+            "تم استلام طلبك وهو قيد المعالجة. ستصلك رسالة تأكيد قريباً.",
           whatsNext: "ماذا بعد؟",
           nextSteps: [
             "سنتصل بك لتأكيد تفاصيل طلبك",
             "سيقوم فريقنا باستلام ملابسك في الموعد المحدد",
             "سيتم تنظيف ملابسك بعناية",
-            "سنقوم بإعادة تسليم ملابسك في الموعد المحدد"
+            "سنقوم بإعادة تسليم ملابسك في الموعد المحدد",
           ],
           whyChooseUs: "لماذا تختار خدمتنا؟",
           benefits: [
             "تنظيف احترافي بمنتجات صديقة للبيئة",
             "وقت تسليم سريع",
             "استلام وتسليم مجاني",
-            "ضمان الرضا"
+            "ضمان الرضا",
           ],
           needHelp: "تحتاج مساعدة؟",
           contactUs: "اتصل بفريق الدعم لأي استفسارات",
@@ -1368,8 +1432,8 @@ i18n.use(initReactI18next).init({
             "دفع آمن",
             "دعم على مدار الساعة",
             "ضمان الجودة",
-            "ضمان الرضا"
-          ]
+            "ضمان الرضا",
+          ],
         },
 
         // Order History
@@ -1425,68 +1489,67 @@ i18n.use(initReactI18next).init({
           billingAddress: "عنوان الفاتورة",
           orderSummary: "ملخص الطلب",
           orderDetails: "تفاصيل الطلب",
-        search: "ابحث في الطلبات..."
-
+          search: "ابحث في الطلبات...",
         },
-profile: {
-        profile: "الملف الشخصي",  
-        orders: "الطلبات",     
-        title: "ملفي الشخصي",
-        personalInfo: "المعلومات الشخصية",
-        orderHistory: "سجل الطلبات",
-        preferences: "التفضيلات",
-        paymentMethods: "طرق الدفع",
-        membership: "العضوية",
-        name: "الاسم الكامل",
-        email: "البريد الإلكتروني",
-        phone: "رقم الهاتف",
-        address: "العنوان",
-        gender: "الجنس",
-        dateOfBirth: "تاريخ الميلاد",
-        membershipLevel: "مستوى العضوية",
-        preferredLanguage: "اللغة المفضلة",
-        notificationPreferences: "تفضيلات الإشعارات",
-        edit: "تعديل الملف",
-        save: "حفظ التغييرات",
-        cancel: "إلغاء",
-        logout: "تسجيل الخروج",
-        adminDashboard: "لوحة التحكم",
-        notProvided: "غير متوفر",
-        selectGender: "اختر الجنس",
-        male: "ذكر",
-        female: "أنثى",
-        other: "آخر",
-        member: "عضو",
-        admin: "مدير",
-        membership: {
-          standard: "عادي",
-          premium: "مميز",
-          vip: "VIP"
+        profile: {
+          profile: "الملف الشخصي",
+          orders: "الطلبات",
+          title: "ملفي الشخصي",
+          personalInfo: "المعلومات الشخصية",
+          orderHistory: "سجل الطلبات",
+          preferences: "التفضيلات",
+          paymentMethods: "طرق الدفع",
+          membership: "العضوية",
+          name: "الاسم الكامل",
+          email: "البريد الإلكتروني",
+          phone: "رقم الهاتف",
+          address: "العنوان",
+          gender: "الجنس",
+          dateOfBirth: "تاريخ الميلاد",
+          membershipLevel: "مستوى العضوية",
+          preferredLanguage: "اللغة المفضلة",
+          notificationPreferences: "تفضيلات الإشعارات",
+          edit: "تعديل الملف",
+          save: "حفظ التغييرات",
+          cancel: "إلغاء",
+          logout: "تسجيل الخروج",
+          adminDashboard: "لوحة التحكم",
+          notProvided: "غير متوفر",
+          selectGender: "اختر الجنس",
+          male: "ذكر",
+          female: "أنثى",
+          other: "آخر",
+          member: "عضو",
+          admin: "مدير",
+          membership: {
+            standard: "عادي",
+            premium: "مميز",
+            vip: "VIP",
+          },
+          languageSettings: "إعدادات اللغة",
+          notificationSettings: "إعدادات الإشعارات",
+          accountPreferences: "تفضيلات الحساب",
+          emailNotifications: "تفعيل إشعارات البريد الإلكتروني",
+          promotionalEmails: "تلقي رسائل ترويجية",
+          requestDataExport: "طلب تصدير البيانات",
+          deleteAccount: "حذف الحساب",
+          areYouSure: "هل أنت متأكد؟",
+          deleteAccountWarning:
+            "سيؤدي هذا إلى حذف حسابك وبياناتك المرتبطة به بشكل دائم.",
+          changePassword: "تغيير كلمة المرور",
+          currentPassword: "كلمة المرور الحالية",
+          newPassword: "كلمة المرور الجديدة",
+          confirmNewPassword: "تأكيد كلمة المرور الجديدة",
+          updatePassword: "تحديث كلمة المرور",
+          passwordUpdated: "تم تحديث كلمة المرور بنجاح",
+          addPaymentMethod: "إضافة طريقة دفع",
+          remove: "إزالة",
+          expires: "تنتهي في",
+          default: "افتراضي",
+          setAsDefault: "تعيين كافتراضي",
+          noPaymentMethods: "لا توجد طرق دفع",
+          profileUpdated: "تم تحديث الملف الشخصي بنجاح",
         },
-        languageSettings: "إعدادات اللغة",
-        notificationSettings: "إعدادات الإشعارات",
-        accountPreferences: "تفضيلات الحساب",
-        emailNotifications: "تفعيل إشعارات البريد الإلكتروني",
-        promotionalEmails: "تلقي رسائل ترويجية",
-        requestDataExport: "طلب تصدير البيانات",
-        deleteAccount: "حذف الحساب",
-        areYouSure: "هل أنت متأكد؟",
-        deleteAccountWarning: "سيؤدي هذا إلى حذف حسابك وبياناتك المرتبطة به بشكل دائم.",
-        changePassword: "تغيير كلمة المرور",
-        currentPassword: "كلمة المرور الحالية",
-        newPassword: "كلمة المرور الجديدة",
-        confirmNewPassword: "تأكيد كلمة المرور الجديدة",
-        updatePassword: "تحديث كلمة المرور",
-        passwordUpdated: "تم تحديث كلمة المرور بنجاح",
-        addPaymentMethod: "إضافة طريقة دفع",
-        remove: "إزالة",
-        expires: "تنتهي في",
-        default: "افتراضي",
-        setAsDefault: "تعيين كافتراضي",
-        noPaymentMethods: "لا توجد طرق دفع",
-        profileUpdated: "تم تحديث الملف الشخصي بنجاح"
-      },
-    
 
         // Dashboard
         dashboard: {
@@ -1587,7 +1650,7 @@ profile: {
             cancelledOrders: "ملغاة",
             totalSpent: "إجمالي المصروف",
             savings: "التوفير",
-            points: "نقاط الولاء"
+            points: "نقاط الولاء",
           },
           notifications: "الإشعارات",
           messages: "الرسائل",
@@ -1596,7 +1659,7 @@ profile: {
           loyaltyProgram: "برنامج الولاء",
           referFriend: "إحالة صديق",
           help: "مركز المساعدة",
-          feedback: "ملاحظات"
+          feedback: "ملاحظات",
         },
 
         // Admin
@@ -1669,12 +1732,12 @@ profile: {
             roles: {
               admin: "مدير",
               employee: "موظف",
-              client: "عميل"
+              client: "عميل",
             },
             statuses: {
               active: "نشط",
-              inactive: "غير نشط"
-            }
+              inactive: "غير نشط",
+            },
           },
           settings: {
             title: "الإعدادات",
@@ -1685,7 +1748,7 @@ profile: {
             businessHours: "ساعات العمل",
             deliverySettings: "إعدادات التوصيل",
             saveChanges: "حفظ التغييرات",
-            resetDefaults: "إعادة التعيين إلى الافتراضي"
+            resetDefaults: "إعادة التعيين إلى الافتراضي",
           },
           reports: {
             title: "التقارير",
@@ -1696,8 +1759,8 @@ profile: {
             export: "تصدير التقرير",
             generate: "إنشاء تقرير",
             dateRange: "نطاق التاريخ",
-            filter: "تصفية"
-          }
+            filter: "تصفية",
+          },
         },
 
         // Orders Management
@@ -1723,7 +1786,7 @@ profile: {
           unknownUser: "عميل غير معروف",
           unknownService: "خدمة غير معروفة",
           updateStatus: "تحديث الحالة",
-          deleteConfirm: "هل أنت متأكد أنك تريد حذف هذا الطلب؟"
+          deleteConfirm: "هل أنت متأكد أنك تريد حذف هذا الطلب؟",
         },
 
         // User Management
@@ -1748,7 +1811,7 @@ profile: {
           noUsersFound: "لا توجد مستخدمين",
           userCreated: "تم إنشاء المستخدم بنجاح",
           userUpdated: "تم تحديث المستخدم بنجاح",
-          userDeleted: "تم حذف المستخدم بنجاح"
+          userDeleted: "تم حذف المستخدم بنجاح",
         },
 
         // Employee Dashboard
@@ -1762,7 +1825,7 @@ profile: {
             efficiency: "تصنيف الكفاءة",
             attendance: "سجل الحضور",
             upcoming: "الجدول القادم",
-            recentActivity: "النشاط الحديث"
+            recentActivity: "النشاط الحديث",
           },
           orders: {
             process: "معالجة الطلب",
@@ -1772,7 +1835,7 @@ profile: {
             priority: "الأولوية",
             high: "عالي",
             medium: "متوسط",
-            low: "منخفض"
+            low: "منخفض",
           },
           tasks: {
             title: "إدارة المهام",
@@ -1781,8 +1844,8 @@ profile: {
             completed: "مكتملة",
             overdue: "متأخرة",
             dueToday: "مستحقة اليوم",
-            markComplete: "وضع علامة مكتمل"
-          }
+            markComplete: "وضع علامة مكتمل",
+          },
         },
 
         // Client Portal
@@ -1795,7 +1858,7 @@ profile: {
             addressBook: "دفتر العناوين",
             paymentMethods: "طرق الدفع",
             notifications: "الإشعارات",
-            referrals: "برنامج الإحالة"
+            referrals: "برنامج الإحالة",
           },
           loyalty: {
             points: "نقاط الولاء",
@@ -1805,8 +1868,8 @@ profile: {
             tier: "مستوى العضوية",
             silver: "فضي",
             gold: "ذهبي",
-            platinum: "بلاتيني"
-          }
+            platinum: "بلاتيني",
+          },
         },
 
         // Calendar
@@ -1828,7 +1891,7 @@ profile: {
           daily: "يومي",
           weekly: "أسبوعي",
           monthly: "شهري",
-          yearly: "سنوي"
+          yearly: "سنوي",
         },
 
         // File Upload
@@ -1841,7 +1904,7 @@ profile: {
           uploadSuccess: "تم الرفع بنجاح",
           uploadFailed: "فشل الرفع",
           remove: "إزالة",
-          preview: "معاينة"
+          preview: "معاينة",
         },
 
         // Data Tables
@@ -1856,7 +1919,7 @@ profile: {
           delete: "حذف",
           view: "عرض",
           sort: "ترتيب",
-          filter: "تصفية"
+          filter: "تصفية",
         },
 
         // Form Validation
@@ -1876,7 +1939,7 @@ profile: {
           passwordReq2: "حرف كبير واحد على الأقل",
           passwordReq3: "حرف صغير واحد على الأقل",
           passwordReq4: "رقم واحد على الأقل",
-          passwordReq5: "رمز خاص واحد على الأقل"
+          passwordReq5: "رمز خاص واحد على الأقل",
         },
 
         // Status
@@ -1893,7 +1956,7 @@ profile: {
           archived: "مؤرشف",
           verified: "تم التحقق",
           unverified: "غير محقق",
-          expired: "منتهي الصلاحية"
+          expired: "منتهي الصلاحية",
         },
 
         // Notifications
@@ -1908,7 +1971,7 @@ profile: {
           passwordUpdated: "تم تحديث كلمة المرور بنجاح!",
           errorOccurred: "حدث خطأ. الرجاء المحاولة مرة أخرى.",
           unauthorized: "تحتاج إلى تسجيل الدخول للوصول إلى هذه الصفحة",
-          forbidden: "ليس لديك إذن للوصول إلى هذا المورد"
+          forbidden: "ليس لديك إذن للوصول إلى هذا المورد",
         },
 
         // Service Types
@@ -1922,7 +1985,7 @@ profile: {
           curtain_cleaning: "تنظيف الستائر",
           leather_cleaning: "تنظيف الجلود",
           stain_removal: "إزالة البقع",
-          ironing: "خدمة الكي"
+          ironing: "خدمة الكي",
         },
 
         // Footer
@@ -1939,18 +2002,16 @@ profile: {
           rightsReserved: "جميع الحقوق محفوظة",
           privacy: "سياسة الخصوصية",
           terms: "شروط الخدمة",
-          sitemap: "خريطة الموقع"
-        }
-      }
-    }
+          sitemap: "خريطة الموقع",
+        },
+      },
+    },
   },
   lng: "en", // default language
   fallbackLng: "en",
   interpolation: {
     escapeValue: false,
-  }
+  },
 });
 
 export default i18n;
-
-

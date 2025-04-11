@@ -1,13 +1,20 @@
 import { MotionDiv, fadeIn, slideUp, MotionH1 } from "../../context/AppContext";
 import { useTranslation } from "react-i18next";
 import { GiWashingMachine } from "react-icons/gi";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import i18n from "../../i18n";
+import { useEffect } from "react";
 
 const AboutPage = () => {
   const { t } = useTranslation();
   const isRTL = i18n.language === "ar";
+  const controls = useAnimation();
 
+  useEffect(() => {
+    controls.start("visible");
+  }, [controls]);
+
+  // Egyptian-themed data
   const features = [
     {
       title: t("about.features.quality.title"),
@@ -55,119 +62,322 @@ const AboutPage = () => {
   ];
 
   const stats = [
-    { value: "13+", label: t("about.stats.years") },
-    { value: "10K+", label: t("about.stats.customers") },
-    { value: "5", label: t("about.stats.locations") },
-    { value: "50K+", label: t("about.stats.items") },
+    { value: "15+", label: t("about.stats.years") },
+    { value: "25K+", label: t("about.stats.customers") },
+    { value: "8", label: t("about.stats.locations") },
+    { value: "100K+", label: t("about.stats.items") },
   ];
 
   const testimonials = [
     {
       quote: t("about.testimonials.testimonial1.quote"),
       author: t("about.testimonials.testimonial1.author"),
+      role: t("about.testimonials.testimonial1.role"),
     },
     {
       quote: t("about.testimonials.testimonial2.quote"),
       author: t("about.testimonials.testimonial2.author"),
+      role: t("about.testimonials.testimonial2.role"),
     },
     {
       quote: t("about.testimonials.testimonial3.quote"),
       author: t("about.testimonials.testimonial3.author"),
+      role: t("about.testimonials.testimonial3.role"),
     },
   ];
+
+  // Animated SVG Background Component
+  const AnimatedBackground = () => (
+    <div className="absolute inset-0 overflow-hidden -z-10">
+      <svg
+        className="absolute w-full h-full opacity-10"
+        viewBox="0 0 1200 800"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <motion.path
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 0.3 }}
+          transition={{ duration: 2, delay: 0.5 }}
+          d="M0 400 Q 300 100 600 400 T 1200 400"
+          stroke="#3B82F6"
+          strokeWidth="2"
+          fill="none"
+        />
+        <motion.circle
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 1, delay: 1 }}
+          cx="200"
+          cy="200"
+          r="30"
+          fill="#3B82F6"
+          fillOpacity="0.2"
+        />
+        <motion.circle
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 1, delay: 1.2 }}
+          cx="1000"
+          cy="600"
+          r="40"
+          fill="#3B82F6"
+          fillOpacity="0.2"
+        />
+        <motion.rect
+          initial={{ rotate: 0 }}
+          animate={{ rotate: 45 }}
+          transition={{
+            duration: 2,
+            delay: 1.5,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+          x="800"
+          y="100"
+          width="50"
+          height="50"
+          fill="#3B82F6"
+          fillOpacity="0.2"
+        />
+      </svg>
+    </div>
+  );
+
+  // Floating Bubbles Animation
+  const FloatingBubbles = () => {
+    const bubbles = Array.from({ length: 15 }).map((_, i) => {
+      const size = Math.random() * 20 + 10;
+      const posX = Math.random() * 100;
+      const delay = Math.random() * 5;
+      const duration = Math.random() * 10 + 10;
+
+      return (
+        <motion.div
+          key={i}
+          initial={{ y: 800, opacity: 0 }}
+          animate={{ y: -100, opacity: [0, 0.5, 0] }}
+          transition={{
+            duration,
+            delay,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+          style={{
+            position: "absolute",
+            left: `${posX}%`,
+            width: `${size}px`,
+            height: `${size}px`,
+            borderRadius: "50%",
+            backgroundColor: "#3B82F6",
+            opacity: 0.3,
+          }}
+        />
+      );
+    });
+
+    return (
+      <div className="absolute inset-0 overflow-hidden -z-10">{bubbles}</div>
+    );
+  };
 
   return (
     <MotionDiv
       initial="hidden"
-      animate="visible"
+      animate={controls}
       variants={fadeIn}
-      className={`min-h-screen bg-gradient-to-b from-blue-50 to-white ${
+      className={`min-h-screen bg-gradient-to-b from-blue-50 to-white overflow-hidden relative ${
         isRTL ? "rtl" : ""
       }`}
       dir={isRTL ? "rtl" : "ltr"}
     >
+      <AnimatedBackground />
+      <FloatingBubbles />
+
       {/* Hero Section */}
-      <div className="container mx-auto px-4 py-20 text-center">
+      <div className="container mx-auto px-4 py-20 text-center relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: 20, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{
+            duration: 0.6,
+            type: "spring",
+            damping: 10,
+            stiffness: 100,
+          }}
           className="flex justify-center mb-6"
         >
           <div className="relative">
-            <div className="absolute -inset-1 bg-blue-200 rounded-full blur opacity-75 animate-pulse"></div>
-            <div className="relative flex items-center justify-center h-16 w-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full shadow-lg mx-auto">
+            <motion.div
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.7, 1, 0.7],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+              }}
+              className="absolute -inset-1 bg-blue-200 rounded-full blur opacity-75"
+            ></motion.div>
+            <motion.div
+              whileHover={{ rotate: 360 }}
+              transition={{ duration: 1 }}
+              className="relative flex items-center justify-center h-16 w-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full shadow-lg mx-auto"
+            >
               <GiWashingMachine className="text-white text-2xl" />
-            </div>
+            </motion.div>
           </div>
         </motion.div>
 
         <MotionH1
           variants={slideUp}
-          className="text-4xl md:text-5xl font-bold text-gray-800 mb-4"
+          className="text-4xl md:text-6xl font-bold text-gray-800 mb-6"
         >
           {t("about.title")}
+          <motion.span
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-blue-600"
+          >
+            .
+          </motion.span>
         </MotionH1>
 
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-xl text-gray-600 max-w-3xl mx-auto"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
         >
           {t("about.subtitle")}
         </motion.p>
+
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: "100px" }}
+          transition={{ delay: 0.6 }}
+          className="h-1 bg-blue-500 mx-auto mt-8 rounded-full"
+        />
       </div>
 
       {/* Mission & Vision Section */}
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <motion.div
-            variants={slideUp}
-            className="bg-white p-8 rounded-xl shadow-lg"
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="bg-white p-8 rounded-xl shadow-xl border border-blue-100 hover:border-blue-200 transition-all"
           >
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">
-              {t("about.missionTitle")}
-            </h3>
-            <p className="text-gray-600">{t("about.missionText")}</p>
+            <div className="flex items-center mb-6">
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="text-3xl mr-4"
+              >
+                🎯
+              </motion.div>
+              <h3 className="text-2xl font-bold text-gray-800">
+                {t("about.missionTitle")}
+              </h3>
+            </div>
+            <p className="text-gray-600 leading-relaxed">
+              {t("about.missionText")}
+            </p>
           </motion.div>
 
           <motion.div
-            variants={slideUp}
-            className="bg-white p-8 rounded-xl shadow-lg"
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="bg-white p-8 rounded-xl shadow-xl border border-blue-100 hover:border-blue-200 transition-all"
           >
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">
-              {t("about.visionTitle")}
-            </h3>
-            <p className="text-gray-600">{t("about.visionText")}</p>
+            <div className="flex items-center mb-6">
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="text-3xl mr-4"
+              >
+                👁️
+              </motion.div>
+              <h3 className="text-2xl font-bold text-gray-800">
+                {t("about.visionTitle")}
+              </h3>
+            </div>
+            <p className="text-gray-600 leading-relaxed">
+              {t("about.visionText")}
+            </p>
           </motion.div>
         </div>
       </div>
 
       {/* Features Section */}
-      <motion.div className="container mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-        {features.map((feature, index) => (
-          <motion.div
-            key={index}
-            variants={slideUp}
-            whileHover={{ y: -10 }}
-            className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
-          >
-            <div className="text-4xl mb-4">{feature.icon}</div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">
-              {feature.title}
-            </h3>
-            <p className="text-gray-600">{feature.description}</p>
-          </motion.div>
-        ))}
-      </motion.div>
+      <div className="container mx-auto px-4 py-12 relative z-10">
+        <MotionH1
+          variants={slideUp}
+          className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-12"
+        >
+          {t("about.features.title")}
+        </MotionH1>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{
+                y: -10,
+                boxShadow:
+                  "0 20px 25px -5px rgba(59, 130, 246, 0.1), 0 10px 10px -5px rgba(59, 130, 246, 0.04)",
+              }}
+              className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+            >
+              <div className="absolute -right-10 -top-10 text-9xl opacity-10">
+                {feature.icon}
+              </div>
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="text-4xl mb-4"
+              >
+                {feature.icon}
+              </motion.div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600 relative z-10">
+                {feature.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
 
       {/* Values Section */}
-      <div className="bg-blue-50 py-16">
-        <div className="container mx-auto px-4">
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 py-16 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <svg
+            viewBox="0 0 1200 800"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full"
+          >
+            <path
+              d="M0 400 Q 300 200 600 400 T 1200 400"
+              stroke="white"
+              strokeWidth="2"
+              fill="none"
+            />
+          </svg>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
           <MotionH1
             variants={slideUp}
-            className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-12"
+            className="text-3xl md:text-4xl font-bold text-white text-center mb-12"
           >
             {t("about.valuesTitle")}
           </MotionH1>
@@ -176,10 +386,19 @@ const AboutPage = () => {
             {values.map((value, index) => (
               <motion.div
                 key={index}
-                variants={slideUp}
-                className="bg-white p-6 rounded-lg shadow-md text-center"
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-white bg-opacity-90 p-6 rounded-lg shadow-md text-center backdrop-blur-sm hover:bg-opacity-100 transition-all"
               >
-                <div className="text-3xl mb-3">{value.icon}</div>
+                <motion.div
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 1 }}
+                  className="text-3xl mb-3"
+                >
+                  {value.icon}
+                </motion.div>
                 <h4 className="text-lg font-bold text-gray-800 mb-2">
                   {value.title}
                 </h4>
@@ -191,25 +410,58 @@ const AboutPage = () => {
       </div>
 
       {/* History Section */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="p-8 md:p-12">
+      <div className="container mx-auto px-4 py-16 relative z-10">
+        <div className="bg-white rounded-xl shadow-2xl overflow-hidden relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-transparent opacity-50"></div>
+          <div className="relative p-8 md:p-12">
             <MotionH1
               variants={slideUp}
               className="text-3xl font-bold text-gray-800 mb-6"
             >
               {t("about.historyTitle")}
             </MotionH1>
-            <motion.p variants={slideUp} className="text-gray-600">
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-gray-600 leading-relaxed"
+            >
               {t("about.historyText")}
             </motion.p>
+
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="h-1 bg-blue-500 mt-8 origin-left"
+            />
           </div>
         </div>
       </div>
 
       {/* Stats Section */}
-      <div className="bg-blue-600 py-16 text-white">
-        <div className="container mx-auto px-4">
+      <div className="bg-blue-900 py-16 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <svg
+            viewBox="0 0 1200 800"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full"
+          >
+            <motion.path
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 2 }}
+              d="M0 400 Q 300 600 600 400 T 1200 400"
+              stroke="white"
+              strokeWidth="2"
+              fill="none"
+            />
+          </svg>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
           <MotionH1
             variants={slideUp}
             className="text-3xl md:text-4xl font-bold text-center mb-12"
@@ -221,13 +473,20 @@ const AboutPage = () => {
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
-                variants={slideUp}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-4xl md:text-5xl font-bold mb-2">
+                <motion.div
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="text-4xl md:text-5xl font-bold mb-2 text-blue-200"
+                >
                   {stat.value}
-                </div>
-                <div className="text-lg">{stat.label}</div>
+                </motion.div>
+                <div className="text-lg text-blue-100">{stat.label}</div>
               </motion.div>
             ))}
           </div>
@@ -235,11 +494,11 @@ const AboutPage = () => {
       </div>
 
       {/* Team Section */}
-      <div className="py-16">
+      <div className="py-16 relative z-10">
         <div className="container mx-auto px-4">
           <MotionH1
             variants={slideUp}
-            className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-12"
+            className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-6"
           >
             {t("about.team.title")}
           </MotionH1>
@@ -254,18 +513,30 @@ const AboutPage = () => {
             {[1, 2, 3, 4].map((item) => (
               <motion.div
                 key={item}
-                variants={slideUp}
-                className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: (item - 1) * 0.1 }}
+                whileHover={{ y: -10 }}
+                className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group"
               >
-                <div className="h-48 bg-gray-200"></div>
+                <div className="h-48 bg-gradient-to-r from-blue-400 to-blue-600 relative overflow-hidden">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 0.8 }}
+                    className="absolute inset-0 bg-blue-900 flex items-center justify-center text-white font-bold text-lg opacity-0 transition-opacity duration-300"
+                  >
+                    {t(`about.team.member${item}.bio`).substring(0, 50)}...
+                  </motion.div>
+                </div>
                 <div className="p-6">
-                  <h4 className="text-xl font-bold text-gray-800">
+                  <h4 className="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
                     {t(`about.team.member${item}.name`)}
                   </h4>
                   <p className="text-blue-600 font-medium mb-3">
                     {t(`about.team.member${item}.position`)}
                   </p>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-600 text-sm line-clamp-2">
                     {t(`about.team.member${item}.bio`)}
                   </p>
                 </div>
@@ -276,8 +547,26 @@ const AboutPage = () => {
       </div>
 
       {/* Testimonials Section */}
-      <div className="bg-blue-50 py-16">
-        <div className="container mx-auto px-4">
+      <div className="bg-gradient-to-b from-blue-50 to-white py-16 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <svg
+            viewBox="0 0 1200 800"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full"
+          >
+            <motion.path
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 2 }}
+              d="M0 400 Q 300 200 600 400 T 1200 400"
+              stroke="#3B82F6"
+              strokeWidth="2"
+              fill="none"
+            />
+          </svg>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
           <MotionH1
             variants={slideUp}
             className="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-4"
@@ -295,15 +584,26 @@ const AboutPage = () => {
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={index}
-                variants={slideUp}
-                className="bg-white p-8 rounded-xl shadow-md"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-white p-8 rounded-xl shadow-lg relative"
               >
-                <div className="text-gray-600 italic mb-4">
-                  "{testimonial.quote}"
+                <div className="absolute top-0 left-0 text-6xl text-blue-100 font-serif transform -translate-y-6">
+                  "
+                </div>
+                <div className="text-gray-600 italic mb-6 relative z-10">
+                  {testimonial.quote}
                 </div>
                 <div className="font-bold text-gray-800">
                   - {testimonial.author}
                 </div>
+                {testimonial.role && (
+                  <div className="text-sm text-gray-500">
+                    {testimonial.role}
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>
@@ -313,457 +613,211 @@ const AboutPage = () => {
   );
 };
 
-// 3. Pricing Page
-const PricingPage = () => {
-  const { t } = useTranslation();
-
-  const plans = [
-    {
-      name: t("pricing.plans.basic.name"),
-      price: t("pricing.plans.basic.price"),
-      description: t("pricing.plans.basic.description"),
-      features: [
-        t("pricing.plans.basic.features.0"),
-        t("pricing.plans.basic.features.1"),
-        t("pricing.plans.basic.features.2"),
-      ],
-      popular: false,
-    },
-    {
-      name: t("pricing.plans.standard.name"),
-      price: t("pricing.plans.standard.price"),
-      description: t("pricing.plans.standard.description"),
-      features: [
-        t("pricing.plans.standard.features.0"),
-        t("pricing.plans.standard.features.1"),
-        t("pricing.plans.standard.features.2"),
-        t("pricing.plans.standard.features.3"),
-      ],
-      popular: true,
-    },
-    {
-      name: t("pricing.plans.premium.name"),
-      price: t("pricing.plans.premium.price"),
-      description: t("pricing.plans.premium.description"),
-      features: [
-        t("pricing.plans.premium.features.0"),
-        t("pricing.plans.premium.features.1"),
-        t("pricing.plans.premium.features.2"),
-        t("pricing.plans.premium.features.3"),
-        t("pricing.plans.premium.features.4"),
-      ],
-      popular: false,
-    },
-  ];
-
-  return (
-    <MotionDiv
-      initial="hidden"
-      animate="visible"
-      variants={fadeIn}
-      className="min-h-screen bg-gradient-to-b from-blue-50 to-white"
-    >
-      <div className="container mx-auto px-4 py-20">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex justify-center mb-6"
-          >
-            <div className="relative">
-              <div className="absolute -inset-1 bg-blue-200 rounded-full blur opacity-75 animate-pulse"></div>
-              <div className="relative flex items-center justify-center h-16 w-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full shadow-lg mx-auto">
-                <GiWashingMachine className="text-white text-2xl" />
-              </div>
-            </div>
-          </motion.div>
-
-          <MotionH1
-            variants={slideUp}
-            className="text-4xl md:text-5xl font-bold text-gray-800 mb-4"
-          >
-            {t("pricing.title")}
-          </MotionH1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-xl text-gray-600 max-w-3xl mx-auto"
-          >
-            {t("pricing.subtitle")}
-          </motion.p>
-        </div>
-
-        {/* Pricing Plans */}
-        <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {plans.map((plan, index) => (
-            <motion.div
-              key={index}
-              variants={slideUp}
-              whileHover={{ y: -10 }}
-              className={`relative rounded-xl shadow-lg overflow-hidden transition-all duration-300 ${
-                plan.popular
-                  ? "border-2 border-blue-500 transform scale-105"
-                  : "border border-gray-200"
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute top-0 right-0 bg-blue-500 text-white px-4 py-1 text-sm font-bold rounded-bl-lg">
-                  {t("pricing.mostPopular")}
-                </div>
-              )}
-
-              <div className={`p-8 ${plan.popular ? "bg-white" : "bg-white"}`}>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                  {plan.name}
-                </h3>
-                <p className="text-gray-600 mb-6">{plan.description}</p>
-
-                <div className="mb-8">
-                  <span className="text-4xl font-bold text-blue-600">
-                    {plan.price}
-                  </span>
-                  <span className="text-gray-500">
-                    /{t("pricing.perMonth")}
-                  </span>
-                </div>
-
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center">
-                      <svg
-                        className="h-5 w-5 text-green-500 mr-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span className="text-gray-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className={`w-full py-3 px-6 rounded-lg font-medium transition-all ${
-                    plan.popular
-                      ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600"
-                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
-                >
-                  {t("pricing.choosePlan")}
-                </motion.button>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* FAQ Section */}
-        <div className="max-w-3xl mx-auto mt-20">
-          <MotionH1
-            variants={slideUp}
-            className="text-3xl font-bold text-center text-gray-800 mb-12"
-          >
-            {t("pricing.faq.title")}
-          </MotionH1>
-
-          <motion.div className="space-y-6">
-            {[1, 2, 3, 4].map((item) => (
-              <motion.div
-                key={item}
-                variants={slideUp}
-                className="bg-white p-6 rounded-xl shadow-md"
-              >
-                <h4 className="text-lg font-bold text-gray-800 mb-2">
-                  {t(`pricing.faq.questions.${item - 1}.question`)}
-                </h4>
-                <p className="text-gray-600">
-                  {t(`pricing.faq.questions.${item - 1}.answer`)}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-    </MotionDiv>
-  );
-};
-
-// Add these translations to your i18n configuration
+// Update your i18n resources with Egyptian data
 i18n.addResources("en", "translation", {
   about: {
-    title: "About Our Dry Cleaning Service",
-    subtitle: "Discover our commitment to quality and customer satisfaction",
+    title: "Nile Dry Cleaners - Premium Care for Your Garments",
+    subtitle:
+      "Cairo's trusted dry cleaning service since 2008 - Combining traditional methods with modern technology",
+    missionTitle: "Our Mission",
+    missionText:
+      "To provide exceptional garment care services to the people of Cairo while maintaining the highest standards of quality and environmental responsibility.",
+    visionTitle: "Our Vision",
+    visionText:
+      "To become Egypt's leading dry cleaning chain, setting new standards in garment care and customer service across the Nile Delta region.",
+    featuresTitle: "Why Choose Nile Dry Cleaners?",
     features: {
       quality: {
-        title: "Premium Quality",
+        title: "Egyptian Cotton Quality",
         description:
-          "We use only the finest cleaning solutions and techniques to care for your garments.",
+          "We treat your garments with the same care as premium Egyptian cotton, using techniques perfected over decades.",
       },
       eco: {
-        title: "Eco-Friendly",
+        title: "Nile-Friendly",
         description:
-          "Our environmentally friendly processes ensure a clean planet along with clean clothes.",
+          "Our eco-conscious processes protect the Nile's delicate ecosystem while delivering spotless results.",
       },
       delivery: {
-        title: "Fast Delivery",
+        title: "Cairo-Wide Delivery",
         description:
-          "Enjoy quick turnaround times with our efficient pickup and delivery service.",
+          "Free pickup and delivery across Greater Cairo, with same-day service in Zamalek and Garden City.",
       },
+    },
+    valuesTitle: "Our Egyptian Values",
+    values: {
+      quality: "Excellence (Itqan)",
+      qualityDesc:
+        "We take pride in our work, just as ancient Egyptian artisans took pride in their crafts.",
+      integrity: "Honesty (Amana)",
+      integrityDesc:
+        "We treat every customer's garments as if they were our own, with complete transparency.",
+      innovation: "Innovation (Ibda)",
+      innovationDesc:
+        "Combining traditional Egyptian fabric care with modern technology.",
+      sustainability: "Sustainability (Istidama)",
+      sustainabilityDesc:
+        "Protecting Egypt's environment for future generations.",
+      customerFocus: "Hospitality (Karama)",
+      customerFocusDesc:
+        "Treating every customer with the warmth and respect of Egyptian hospitality.",
+    },
+    historyTitle: "Our Story Along the Nile",
+    historyText:
+      "Founded in 2008 in downtown Cairo, Nile Dry Cleaners started as a small family business. Over the years, we've grown to serve customers across Egypt's capital while maintaining our commitment to quality and community. Today, with 8 locations from Maadi to Heliopolis, we continue to build on our reputation as Cairo's most trusted dry cleaner.",
+    stats: {
+      title: "Serving Egypt With Pride",
+      years: "Years in Business",
+      customers: "Satisfied Customers",
+      locations: "Locations Across Cairo",
+      items: "Items Cleaned Annually",
     },
     team: {
-      title: "Meet Our Team",
+      title: "Meet Our Cairo Team",
+      subtitle: "Dedicated professionals serving Egypt's capital",
       member1: {
-        name: "John Smith",
+        name: "Ahmed El-Sayed",
         position: "Founder & CEO",
+        bio: "With over 20 years in the garment care industry, Ahmed established Nile Dry Cleaners to bring international standards to Egypt.",
       },
       member2: {
-        name: "Sarah Johnson",
-        position: "Head of Operations",
+        name: "Fatima Mahmoud",
+        position: "Quality Control",
+        bio: "Fatima ensures every garment meets our exacting standards before returning to customers.",
       },
       member3: {
-        name: "Michael Brown",
+        name: "Youssef Hassan",
         position: "Customer Service",
+        bio: "Youssef and his team provide the warm Egyptian hospitality we're known for.",
       },
       member4: {
-        name: "Emily Davis",
-        position: "Quality Control",
+        name: "Layla Abdelrahman",
+        position: "Sustainability Officer",
+        bio: "Layla oversees our eco-friendly initiatives to protect the Nile environment.",
       },
     },
-  },
-  contact: {
-    title: "Contact Us",
-    subtitle: "We'd love to hear from you! Get in touch with our team",
-    form: {
-      title: "Send us a message",
-      name: "Your Name",
-      namePlaceholder: "Enter your full name",
-      email: "Email Address",
-      emailPlaceholder: "Enter your email address",
-      message: "Your Message",
-      messagePlaceholder: "How can we help you?",
-      submit: "Send Message",
-    },
-    info: {
-      title: "Contact Information",
-      addressTitle: "Our Location",
-      address: "123 Clean Street, Suite 100, San Francisco, CA 94107",
-      phoneTitle: "Phone Number",
-      phone: "+1 (555) 123-4567",
-      emailTitle: "Email Address",
-      email: "hello@drycleanpro.com",
-    },
-    map: {
-      title: "Find Us on Map",
-      placeholder: "Map would appear here",
-    },
-  },
-  pricing: {
-    title: "Simple, Transparent Pricing",
-    subtitle: "Choose the perfect plan for your laundry needs",
-    mostPopular: "Most Popular",
-    perMonth: "month",
-    choosePlan: "Choose Plan",
-    plans: {
-      basic: {
-        name: "Basic",
-        price: "$19",
-        description: "For individuals with occasional laundry needs",
-        features: [
-          "5 items per month",
-          "Standard cleaning",
-          "48-hour turnaround",
-        ],
+    testimonials: {
+      title: "What Our Customers Say",
+      subtitle: "Hear from satisfied clients across Greater Cairo",
+      testimonial1: {
+        quote:
+          "Nile Dry Cleaners saved my favorite galabeya after a wedding disaster. Their stain removal is magical!",
+        author: "Mona Khalil",
+        role: "Zamalek Resident",
       },
-      standard: {
-        name: "Standard",
-        price: "$39",
-        description: "Perfect for regular users with weekly laundry",
-        features: [
-          "15 items per month",
-          "Premium cleaning",
-          "24-hour turnaround",
-          "Free pickup & delivery",
-        ],
+      testimonial2: {
+        quote:
+          "As a business professional, I trust them with my suits. Always perfect, always on time.",
+        author: "Omar Farouk",
+        role: "Maadi Customer",
       },
-      premium: {
-        name: "Premium",
-        price: "$79",
-        description: "For those who demand the very best service",
-        features: [
-          "Unlimited items",
-          "Ultimate premium cleaning",
-          "Same-day service",
-          "Free pickup & delivery",
-          "Priority customer support",
-        ],
+      testimonial3: {
+        quote:
+          "Their pickup service is a lifesaver for busy moms like me. Quality service with Egyptian warmth.",
+        author: "Nadia Ibrahim",
+        role: "Heliopolis Customer",
       },
-    },
-    faq: {
-      title: "Frequently Asked Questions",
-      questions: [
-        {
-          question: "What's included in the basic plan?",
-          answer:
-            "The basic plan includes 5 items per month with standard cleaning and 48-hour turnaround time.",
-        },
-        {
-          question: "Can I change plans later?",
-          answer:
-            "Yes, you can upgrade or downgrade your plan at any time from your account settings.",
-        },
-        {
-          question: "Is there a contract?",
-          answer:
-            "No, all our plans are month-to-month with no long-term contracts.",
-        },
-        {
-          question: "How does pickup and delivery work?",
-          answer:
-            "We offer free pickup and delivery for Standard and Premium plans at your preferred time and location.",
-        },
-      ],
     },
   },
 });
 
-// Arabic translations
 i18n.addResources("ar", "translation", {
   about: {
-    title: "حول خدمة التنظيف الجاف لدينا",
-    subtitle: "اكتشف التزامنا بالجودة ورضا العملاء",
+    title: "نايل دراي كلين - العناية الفاخرة بملابسك",
+    subtitle:
+      "خدمة التنظيف الجاف الموثوقة في القاهرة منذ 2008 - نجمع بين الطرق التقليدية والتكنولوجيا الحديثة",
+    missionTitle: "مهمتنا",
+    missionText:
+      "توفير خدمات استثنائية للعناية بالملابس لشعب القاهرة مع الحفاظ على أعلى معايير الجودة والمسؤولية البيئية.",
+    visionTitle: "رؤيتنا",
+    visionText:
+      "أن نصبح سلسلة التنظيف الجاف الرائدة في مصر، ونضع معايير جديدة في العناية بالملابس وخدمة العملاء في جميع أنحاء منطقة دلتا النيل.",
+    featuresTitle: "لماذا تختار نايل دراي كلين؟",
     features: {
       quality: {
-        title: "جودة ممتازة",
-        description: "نستخدم فقط أفضل حلول التنظيف والتقنيات للعناية بملابسك.",
+        title: "جودة القطن المصري",
+        description:
+          "نعامل ملابسك بنفس العناية التي نعامل بها القطن المصري الفاخر، باستخدام تقنيات تم تحسينها على مدى عقود.",
       },
       eco: {
-        title: "صديق للبيئة",
+        title: "صديق للنيل",
         description:
-          "عملياتنا الصديقة للبيئة تضمن كوكبًا نظيفًا مع ملابس نظيفة.",
+          "عملياتنا الصديقة للبيئة تحمي النظام البيئي الحساس للنيل مع تقديم نتائج نظيفة.",
       },
       delivery: {
-        title: "توصيل سريع",
+        title: "توصيل في جميع أنحاء القاهرة",
         description:
-          "استمتع بأوقات استجابة سريعة مع خدمة الاستلام والتوصيل الفعالة لدينا.",
+          "استلام وتوصيل مجاني في جميع أنحاء القاهرة الكبرى، مع خدمة في نفس اليوم في الزمالك وجاردن سيتي.",
       },
+    },
+    valuesTitle: "قيمنا المصرية",
+    values: {
+      quality: "الإتقان",
+      qualityDesc: "نفتخر بعملنا، كما افتخر الحرفيون المصريون القدماء بحرفهم.",
+      integrity: "الأمانة",
+      integrityDesc: "نعامل ملابس كل عميل كما لو كانت ملكنا، بشفافية كاملة.",
+      innovation: "الابتكار",
+      innovationDesc:
+        "الجمع بين العناية التقليدية بالأقمشة المصرية والتكنولوجيا الحديثة.",
+      sustainability: "الاستدامة",
+      sustainabilityDesc: "حماية البيئة المصرية للأجيال القادمة.",
+      customerFocus: "الكرم",
+      customerFocusDesc: "معاملة كل عميل بدفء واحترام الضيافة المصرية.",
+    },
+    historyTitle: "قصتنا على ضفاف النيل",
+    historyText:
+      "تأسست نايل دراي كلين عام 2008 في وسط القاهرة كشركة عائلية صغيرة. على مر السنين، نما عملنا لخدمة العملاء في جميع أنحاء عاصمة مصر مع الحفاظ على التزامنا بالجودة والمجتمع. اليوم، مع 8 فروع من المعادي إلى مصر الجديدة، نواصل بناء سمعتنا كأكثر محلات التنظيف الجاف ثقة في القاهرة.",
+    stats: {
+      title: "نخدم مصر بفخر",
+      years: "سنوات في العمل",
+      customers: "عميل راضٍ",
+      locations: "فرع في أنحاء القاهرة",
+      items: "قطعة يتم تنظيفها سنوياً",
     },
     team: {
-      title: "تعرف على فريقنا",
+      title: "تعرف على فريقنا في القاهرة",
+      subtitle: "محترفون مخلصون يخدمون عاصمة مصر",
       member1: {
-        name: "جون سميث",
+        name: "أحمد السيد",
         position: "المؤسس والرئيس التنفيذي",
+        bio: "مع أكثر من 20 عامًا في صناعة العناية بالملابس، أسس أحمد نايل دراي كلين لجلب المعايير الدولية إلى مصر.",
       },
       member2: {
-        name: "سارة جونسون",
-        position: "رئيس العمليات",
+        name: "فاطمة محمود",
+        position: "مراقبة الجودة",
+        bio: "تتأكد فاطمة من أن كل قطعة ملابس تفي بمعاييرنا الدقيقة قبل إعادتها إلى العملاء.",
       },
       member3: {
-        name: "مايكل براون",
+        name: "يوسف حسن",
         position: "خدمة العملاء",
+        bio: "يوسف وفريقه يقدمون الدفء والضيافة المصرية التي تشتهر بها شركتنا.",
       },
       member4: {
-        name: "إيميلي ديفيس",
-        position: "مراقبة الجودة",
+        name: "ليلى عبد الرحمن",
+        position: "مسؤولة الاستدامة",
+        bio: "ليلى تشرف على مبادراتنا الصديقة للبيئة لحماية بيئة النيل.",
       },
     },
-  },
-  contact: {
-    title: "اتصل بنا",
-    subtitle: "نود أن نسمع منك! تواصل مع فريقنا",
-    form: {
-      title: "أرسل لنا رسالة",
-      name: "اسمك",
-      namePlaceholder: "أدخل اسمك الكامل",
-      email: "عنوان البريد الإلكتروني",
-      emailPlaceholder: "أدخل عنوان بريدك الإلكتروني",
-      message: "رسالتك",
-      messagePlaceholder: "كيف يمكننا مساعدتك؟",
-      submit: "إرسال الرسالة",
-    },
-    info: {
-      title: "معلومات الاتصال",
-      addressTitle: "موقعنا",
-      address: "123 شارع كلين، جناح 100، سان فرانسيسكو، كاليفورنيا 94107",
-      phoneTitle: "رقم الهاتف",
-      phone: "+1 (555) 123-4567",
-      emailTitle: "عنوان البريد الإلكتروني",
-      email: "hello@drycleanpro.com",
-    },
-    map: {
-      title: "ابحث عنا على الخريطة",
-      placeholder: "ستظهر الخريطة هنا",
-    },
-  },
-  pricing: {
-    title: "أسعار بسيطة وشفافة",
-    subtitle: "اختر الخطة المثالية لاحتياجات غسيل الملابس الخاصة بك",
-    mostPopular: "الأكثر شعبية",
-    perMonth: "شهر",
-    choosePlan: "اختر الخطة",
-    plans: {
-      basic: {
-        name: "أساسي",
-        price: "19$",
-        description: "للأفراد ذوي احتياجات الغسيل العرضية",
-        features: ["5 قطع في الشهر", "تنظيف قياسي", "وقت التسليم 48 ساعة"],
+    testimonials: {
+      title: "ما يقوله عملاؤنا",
+      subtitle: "استمع إلى آراء العملاء الراضين من جميع أنحاء القاهرة الكبرى",
+      testimonial1: {
+        quote:
+          "نايل دراي كلين أنقذت غلابيتي المفضلة بعد كارثة حفل زفاف. إزالة البقع لديهم سحرية!",
+        author: "منى خليل",
+        role: "مقيمة في الزمالك",
       },
-      standard: {
-        name: "قياسي",
-        price: "39$",
-        description: "مثالي للمستخدمين المنتظمين مع غسيل أسبوعي",
-        features: [
-          "15 قطعة في الشهر",
-          "تنظيف ممتاز",
-          "وقت التسليم 24 ساعة",
-          "استلام وتوصيل مجاني",
-        ],
+      testimonial2: {
+        quote:
+          "كشخص محترف، أثق بهم في تنظيف بدلاتي. دائمًا مثالية، دائمًا في الوقت المحدد.",
+        author: "عمر فاروق",
+        role: "عميل من المعادي",
       },
-      premium: {
-        name: "ممتاز",
-        price: "79$",
-        description: "لأولئك الذين يطالبون بأفضل خدمة",
-        features: [
-          "قطع غير محدودة",
-          "تنظيف ممتاز فائق",
-          "خدمة في نفس اليوم",
-          "استلام وتوصيل مجاني",
-          "دعم عملاء مميز",
-        ],
+      testimonial3: {
+        quote:
+          "خدمة الاستلام الخاصة بهم منقذة للحياة للأمهات المشغولات مثلي. خدمة عالية الجودة مع دفء مصري.",
+        author: "نادية إبراهيم",
+        role: "عميلة من مصر الجديدة",
       },
-    },
-    faq: {
-      title: "أسئلة مكررة",
-      questions: [
-        {
-          question: "ما المدرج في الخطة الأساسية؟",
-          answer:
-            "تتضمن الخطة الأساسية 5 قطع شهريًا مع تنظيف قياسي ووقت تسليم 48 ساعة.",
-        },
-        {
-          question: "هل يمكنني تغيير الخطط لاحقًا؟",
-          answer: "نعم، يمكنك ترقية أو تخفيض خطتك في أي وقت من إعدادات حسابك.",
-        },
-        {
-          question: "هل هناك عقد؟",
-          answer: "لا، جميع خططنا شهرية بدون عقود طويلة الأجل.",
-        },
-        {
-          question: "كيف يعمل الاستلام والتوصيل؟",
-          answer:
-            "نحن نقدم خدمة الاستلام والتوصيل المجانية للخطط القياسية والممتازة في الوقت والمكان الذي تفضله.",
-        },
-      ],
     },
   },
 });

@@ -37,7 +37,7 @@ export const MotionH1 = motion.h1;
 export const MotionP = motion.p;
 
 export const AppProvider = ({ children }) => {
-  const { user, loading: authLoading, profile } = useAuth();
+  const { user, loading: authLoading, profile, checkSession } = useAuth(); // Changed from refreshSession to checkSession
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -83,6 +83,7 @@ export const AppProvider = ({ children }) => {
       setLoading(false);
     }
   }, []);
+
   const fetchOrders = useCallback(async () => {
     try {
       if (!user) return;
@@ -171,63 +172,51 @@ export const AppProvider = ({ children }) => {
     [user]
   );
 
+  const refreshData = useCallback(async () => {
+    if (user) {
+      await Promise.all([
+        fetchServices(),
+        fetchOrders(),
+        profile?.role === "admin" ? fetchAllUsers() : Promise.resolve(),
+      ]);
+    } else {
+      await fetchPublicServices();
+    }
+  }, [user, profile, fetchServices, fetchOrders, fetchAllUsers, fetchPublicServices]);
+
   useEffect(() => {
     changeLanguage("en");
     fetchPublicServices();
   }, [changeLanguage, fetchPublicServices]);
 
   useEffect(() => {
-    if (user) {
-      fetchServices();
-      fetchOrders();
-      if (profile?.role === "admin") {
-        fetchAllUsers();
-      }
-    } else {
-      setOrders([]);
-      setUsers([]);
-      fetchPublicServices();
-    }
-  }, [
-    user,
-    profile,
-    fetchServices,
-    fetchOrders,
-    fetchAllUsers,
-    fetchPublicServices,
-  ]);
+    refreshData();
+  }, [user, profile, refreshData]);
+
   useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === "visible") {
-        // Optionally re-fetch session or auth user
-        await supabase.auth
-          .getSession()
-          .then(({ data }) => {
-            if (!data?.session) {
-              window.location.reload(); // session is gone, force reload to reset app
-            } else {
-              // Re-fetch things if session is valid
-              if (user) {
-                fetchServices();
-                fetchOrders();
-                if (profile?.role === "admin") {
-                  fetchAllUsers();
-                }
-              }
-            }
-          })
-          .catch(() => {
-            window.location.reload(); // fail-safe
-          });
+        try {
+          // First check the session
+          await checkSession?.();
+          
+          // Then refresh data if needed
+          await refreshData();
+        } catch (error) {
+          console.error("Error during visibility change handling:", error);
+          // Fallback to full page reload if session check fails
+          if (error.message.includes("Session expired") || error.message.includes("Invalid token")) {
+            window.location.reload();
+          }
+        }
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
-
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [user, profile, fetchOrders, fetchServices, fetchAllUsers]);
+  }, [checkSession, refreshData]);
 
   const value = useMemo(
     () => ({

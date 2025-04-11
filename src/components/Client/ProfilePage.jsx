@@ -41,20 +41,22 @@ const ProfilePage = () => {
     orders = [],
     loading: appLoading,
   } = useAppContext();
-  const { profile, updateProfile, signOut, user } = useAuth();
+  const { profile, updateProfile, signOut, user, updateUserProfile } =
+    useAuth();
   const { t } = useTranslation();
   const [editMode, setEditMode] = useState(false);
+  // State initialization
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    gender: "",
-    date_of_birth: "",
-    membership_level: "standard",
-    preferred_language: currentLanguage,
-    notification_preferences: true,
+    name: profile?.name || "",
+    phone: profile?.phone || "",
+    gender: profile?.details?.gender || "",
+    address: profile?.details?.address || "",
+    date_of_birth: profile?.details?.date_of_birth || "",
+    membership_level: profile?.details?.membership_level || "standard",
   });
+
+  // Handle form submission
+  
   const [activeTab, setActiveTab] = useState("profile");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -115,17 +117,26 @@ const ProfilePage = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     try {
-      await updateProfile(formData);
+      const updates = {
+        name: formData.name,
+        phone: formData.phone,
+        details: {
+          gender: formData.gender,
+          address: formData.address,
+          date_of_birth: formData.date_of_birth,
+          membership_level: formData.membership_level,
+        },
+      };
+
+      await updateProfile(updates);
       setEditMode(false);
+      // Optionally refresh profile data here
     } catch (error) {
-      console.error("Profile update failed:", error);
+      console.error("Failed to update profile:", error);
     }
   };
-
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
@@ -506,7 +517,7 @@ const ProfilePage = () => {
                                 />
                               ) : (
                                 <div className="px-3 py-1 md:px-4 md:py-2 bg-gray-100 rounded-lg text-sm md:text-base">
-                                  {profile.name || t("profile.notProvided")}
+                                  {profile?.name || t("profile.notProvided")}
                                 </div>
                               )}
                             </div>
@@ -526,7 +537,7 @@ const ProfilePage = () => {
                                 />
                               ) : (
                                 <div className="px-3 py-1 md:px-4 md:py-2 bg-gray-100 rounded-lg text-sm md:text-base">
-                                  {profile.phone || t("profile.notProvided")}
+                                  {profile?.phone || t("profile.notProvided")}
                                 </div>
                               )}
                             </div>
@@ -558,8 +569,8 @@ const ProfilePage = () => {
                                 </select>
                               ) : (
                                 <div className="px-3 py-1 md:px-4 md:py-2 bg-gray-100 rounded-lg text-sm md:text-base">
-                                  {profile.gender
-                                    ? t(`profile.${profile.gender}`)
+                                  {profile?.details?.gender
+                                    ? t(`profile.${profile.details.gender}`)
                                     : t("profile.notProvided")}
                                 </div>
                               )}
@@ -583,7 +594,8 @@ const ProfilePage = () => {
                                 />
                               ) : (
                                 <div className="px-3 py-1 md:px-4 md:py-2 bg-gray-100 rounded-lg text-sm md:text-base">
-                                  {profile.address || t("profile.notProvided")}
+                                  {profile?.details?.address ||
+                                    t("profile.notProvided")}
                                 </div>
                               )}
                             </div>
@@ -603,9 +615,9 @@ const ProfilePage = () => {
                                 />
                               ) : (
                                 <div className="px-3 py-1 md:px-4 md:py-2 bg-gray-100 rounded-lg text-sm md:text-base">
-                                  {profile.date_of_birth
+                                  {profile?.details?.date_of_birth
                                     ? new Date(
-                                        profile.date_of_birth
+                                        profile.details.date_of_birth
                                       ).toLocaleDateString()
                                     : t("profile.notProvided")}
                                 </div>
@@ -637,7 +649,10 @@ const ProfilePage = () => {
                               ) : (
                                 <div className="px-3 py-1 md:px-4 md:py-2 bg-gray-100 rounded-lg text-sm md:text-base">
                                   {t(
-                                    `profile.membership.${formData.membership_level}`
+                                    `profile.membership.${
+                                      profile?.details?.membership_level ||
+                                      "standard"
+                                    }`
                                   )}
                                 </div>
                               )}

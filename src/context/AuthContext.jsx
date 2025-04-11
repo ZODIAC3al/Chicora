@@ -172,6 +172,26 @@ export const AuthProvider = ({ children, navigate }) => {
       setLoading(false);
     }
   }, [user]);
+  // In your Supabase service file
+ const updateUserProfile = async (userId, updates) => {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .update({
+        name: updates.name,
+        phone: updates.phone,
+        details: updates.details
+      })
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { user: data, error: null };
+  } catch (error) {
+    return { user: null, error };
+  }
+};
 
   useEffect(() => {
     let mounted = true;
@@ -253,6 +273,7 @@ export const AuthProvider = ({ children, navigate }) => {
     signUp,
     signOut,
     updateProfile,
+    updateUserProfile
   }), [user, profile, loading, error, signIn, signUp, signOut, updateProfile]);
 
   return (

@@ -15,12 +15,7 @@ import {
   FaHome,
 } from "react-icons/fa";
 import { RiAdminFill } from "react-icons/ri";
-import {
-  BsFillGearFill,
-  BsInfoCircle,
-  BsTelephone,
-  BsCurrencyDollar,
-} from "react-icons/bs";
+import { BsFillGearFill } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
 
 const Navbar = () => {
@@ -106,7 +101,7 @@ const Navbar = () => {
         hideFromNav: true,
       },
     ],
-    [t]
+    [t],
   );
 
   // Filter navigation items based on user role and auth status
@@ -356,6 +351,8 @@ const Navbar = () => {
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
+              // FIX: Added unique key here to prevent Framer Motion/React warnings
+              key="mobile-nav-container"
               variants={mobileMenuVariants}
               initial="hidden"
               animate="visible"

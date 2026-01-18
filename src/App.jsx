@@ -23,6 +23,7 @@ import AboutPage from "./components/Shared/AboutPage";
 import ContactPage from "./components/Shared/ContactPage ";
 import PricingPage from "./components/Shared/PricingPage";
 import ProfilePage from "./components/Client/ProfilePage";
+import InstallPWA from "./components/Shared/InstallPWA"; // <--- Added Import
 
 // Enhanced ProtectedRoute with AuthContext
 const ProtectedRoute = ({ children, roles = [] }) => {
@@ -34,7 +35,6 @@ const ProtectedRoute = ({ children, roles = [] }) => {
   const user = authUser || contextUser;
 
   if (loading) {
-    
     return <Loading />;
   }
 
@@ -112,6 +112,9 @@ const App = () => {
       </main>
 
       <Footer />
+
+      {/* Added InstallPWA Component here */}
+      <InstallPWA />
     </div>
   );
 };

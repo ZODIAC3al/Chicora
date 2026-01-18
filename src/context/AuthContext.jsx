@@ -4,251 +4,60 @@ import {
   useEffect,
   useState,
   useCallback,
-  useMemo,
+  useRef,
 } from "react";
-import PropTypes from "prop-types";
 import { supabase } from "../../lib/supabase";
+import Loading from "../components/Shared/Loading";
+
 const AuthContext = createContext();
-export const AuthProvider = ({ children, navigate }) => {
+
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  const handleUserSession = useCallback(async (user) => {
+  const isFetchingRef = useRef(false);
+
+  // --- HELPER: Fetch Profile ---
+  const fetchUserProfile = useCallback(async (userId) => {
+    if (!userId || isFetchingRef.current) return;
+
     try {
-      setUser(user);
-      setLoading(true);
-
-      const { data: existingProfile, error: fetchError } = await supabase
+      isFetchingRef.current = true;
+      const { data, error } = await supabase
         .from("users")
         .select("*")
-        .eq("id", user.id)
+        .eq("id", userId)
         .single();
 
-      if (fetchError || !existingProfile) {
-        const { data: newProfile, error: createError } = await supabase
-          .from("users")
-          .upsert({
-            id: user.id,
-            email: user.email,
-            name: user.user_metadata?.name || "",
-            phone: user.user_metadata?.phone || "",
-            created_at: new Date().toISOString(),
-          })
-          .select()
-          .single();
-
-        if (createError) throw createError;
-        setProfile(newProfile);
-      } else {
-        if (
-          user.user_metadata?.phone &&
-          existingProfile.phone !== user.user_metadata.phone
-        ) {
-          const { data: updatedProfile, error: updateError } = await supabase
-            .from("users")
-            .update({ phone: user.user_metadata.phone })
-            .eq("id", user.id)
-            .select()
-            .single();
-
-          if (updateError) throw updateError;
-          setProfile(updatedProfile);
-        } else {
-          setProfile(existingProfile);
-        }
+      if (data) {
+        setProfile(data);
       }
-
-      setError(null);
     } catch (err) {
-      console.error("User session handling error:", err);
-      setError(err);
+      console.error("Unexpected profile error:", err);
     } finally {
-      setLoading(false);
+      isFetchingRef.current = false;
     }
   }, []);
 
-  const signIn = useCallback(async (email, password) => {
-    try {
-      setLoading(true);
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (authError) throw authError;
-      return data;
-    } catch (err) {
-      console.error("Sign in error:", err);
-      setError(err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const signUp = useCallback(async (email, password, metadata = {}) => {
-    try {
-      setLoading(true);
-      const { data, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            ...metadata,
-            phone: metadata.phone,
-          },
-        },
-      });
-
-      if (authError) throw authError;
-
-      if (data.user) {
-        const { error: profileError } = await supabase.from("users").upsert({
-          id: data.user.id,
-          email: data.user.email,
-          name: metadata.name || "",
-          phone: metadata.phone || "",
-          created_at: new Date().toISOString(),
-        });
-
-        if (profileError) throw profileError;
-      }
-
-      return data;
-    } catch (err) {
-      console.error("Sign up error:", err);
-      setError(err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const signOut = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      setUser(null);
-      setProfile(null);
-    } catch (err) {
-      console.error("Sign out error:", err);
-      setError(err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const updateProfile = useCallback(async (updates) => {
-    try {
-      if (!user) throw new Error("User not authenticated");
-      setLoading(true);
-
-      if (updates.email) {
-        const { error: authError } = await supabase.auth.updateUser({
-          email: updates.email,
-        });
-        if (authError) throw authError;
-      }
-
-      const { data, error: profileError } = await supabase
-        .from("users")
-        .update(updates)
-        .eq("id", user.id)
-        .select()
-        .single();
-
-      if (profileError) throw profileError;
-      setProfile(data);
-      return data;
-    } catch (err) {
-      console.error("Profile update error:", err);
-      setError(err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-  // In your Supabase service file
- const updateUserProfile = async (userId, updates) => {
-  try {
-    const { data, error } = await supabase
-      .from('users')
-      .update({
-        name: updates.name,
-        phone: updates.phone,
-        details: updates.details
-      })
-      .eq('id', userId)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return { user: data, error: null };
-  } catch (error) {
-    return { user: null, error };
-  }
-};
-
+  // --- INITIALIZATION ---
   useEffect(() => {
     let mounted = true;
-    let authSubscription;
 
     const initializeAuth = async () => {
       try {
-        setLoading(true);
-
         const {
           data: { session },
-          error: sessionError,
+          error,
         } = await supabase.auth.getSession();
+        if (error) throw error;
 
-        if (sessionError) {
-          console.error("Session check error:", sessionError);
-          if (mounted) setError(sessionError);
-          return;
+        if (session?.user) {
+          setUser(session.user);
+          fetchUserProfile(session.user.id);
         }
-
-        if (session?.user && mounted) {
-          await handleUserSession(session.user);
-        }
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          async (event, session) => {
-            if (!mounted) return;
-
-            try {
-              if (session?.user) {
-                await handleUserSession(session.user);
-
-                if (event === "SIGNED_IN" && typeof navigate === "function") {
-                  navigate("/");
-                }
-              } else {
-                setUser(null);
-                setProfile(null);
-
-                if (typeof navigate === "function" && 
-                    window.location.pathname !== "/") {
-                  navigate("/");
-                }
-              }
-            } catch (err) {
-              console.error("Auth state change error:", err);
-              setError(err);
-            } finally {
-              if (mounted) setLoading(false);
-            }
-          }
-        );
-
-        authSubscription = subscription;
       } catch (err) {
-        console.error("Initialization error:", err);
-        if (mounted) setError(err);
+        console.error("Auth Init Error:", err);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -256,42 +65,118 @@ export const AuthProvider = ({ children, navigate }) => {
 
     initializeAuth();
 
+    // Safety Timeout
+    const timeoutId = setTimeout(() => {
+      if (loading && mounted) setLoading(false);
+    }, 3000);
+
+    // Listener
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+      if (event === "TOKEN_REFRESHED") return;
+
+      if (event === "SIGNED_IN" && session?.user) {
+        setUser(session.user);
+        fetchUserProfile(session.user.id);
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+        setProfile(null);
+      }
+
+      setLoading(false);
+    });
+
     return () => {
       mounted = false;
-      if (authSubscription?.unsubscribe) {
-        authSubscription.unsubscribe();
-      }
+      clearTimeout(timeoutId);
+      subscription.unsubscribe();
     };
-  }, [navigate, handleUserSession]);
+  }, [fetchUserProfile, loading]);
 
-  const value = useMemo(() => ({
-    user,
-    profile,
+  // --- ACTIONS (Renamed back to original names) ---
+
+  const signIn = async (email, password) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signUp = async (email, password, metadata = {}) => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { ...metadata, phone: metadata.phone },
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        const newProfile = {
+          id: data.user.id,
+          email: data.user.email,
+          name: metadata.name || "",
+          phone: metadata.phone || "",
+          created_at: new Date().toISOString(),
+          role: "client",
+        };
+        setProfile(newProfile);
+        await supabase.from("users").insert([newProfile]);
+      }
+      return data;
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signOut = async () => {
+    setLoading(true);
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setProfile(null);
+    } catch (error) {
+      console.error("Sign out error", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const value = {
+    user: user ? { ...user, ...profile } : null,
+    profile, // Helper for Navbar role checks
     loading,
-    error,
-    signIn,
-    signUp,
-    signOut,
-    updateProfile,
-    updateUserProfile
-  }), [user, profile, loading, error, signIn, signUp, signOut, updateProfile]);
+    signIn, // Correct name for Login page
+    signUp, // Correct name for Register page
+    signOut, // Correct name for Navbar logout
+  };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  if (loading) {
+    return <Loading />;
+  }
 
-AuthProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-  navigate: PropTypes.func,
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 };

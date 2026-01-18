@@ -1,456 +1,443 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAppContext, MotionDiv, fadeIn, slideUp, MotionH1 } from '../../context/AppContext';
-import { useAuth } from '../../context/AuthContext';
-import { useTranslation } from 'react-i18next';
-import { GiWashingMachine } from 'react-icons/gi';
-import { FaSignInAlt, FaUser, FaLock, FaEnvelope, FaPhone } from 'react-icons/fa';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAppContext } from "../../context/AppContext";
+import { useAuth } from "../../context/AuthContext";
+import { useTranslation } from "react-i18next";
+import { supabase } from "../../../lib/supabase"; // Ensure this path is correct
+
+// Icons
+import { GiWashingMachine } from "react-icons/gi";
+import {
+  FaUser,
+  FaLock,
+  FaEnvelope,
+  FaPhone,
+  FaGoogle,
+  FaFacebookF,
+  FaEye,
+  FaEyeSlash,
+} from "react-icons/fa";
+import { ChevronRight, Sparkles } from "lucide-react";
+
+// Animation
+import { motion, AnimatePresence } from "framer-motion";
 
 const Auth = () => {
-    const [isLogin, setIsLogin] = useState(true);
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        password: '',
-        confirmPassword: ''
-    });
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-    
-    const { user } = useAppContext();
-    const { signIn, signUp } = useAuth();
-    const navigate = useNavigate();
-    const { t } = useTranslation();
+  const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
-    // Animation variants
-    const formItemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                type: 'spring',
-                stiffness: 100,
-                damping: 10
-            }
-        }
-    };
+  // Form State
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-    const switchButtonVariants = {
-        hover: {
-            scale: 1.02,
-            boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.1)',
-            transition: { duration: 0.2 }
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Context
+  const { user } = useAppContext();
+  const { signIn, signUp } = useAuth(); // Assuming loginWithGoogle is here or we use supabase directly
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user, navigate]);
+
+  // Handlers
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (error) setError("");
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
-        tap: { scale: 0.98 }
-    };
+      });
+      if (error) throw error;
+    } catch (err) {
+      console.error("Google Login Error:", err);
+      setError(err.message);
+      setLoading(false);
+    }
+  };
 
-    // Redirect if user is already logged in
-    useEffect(() => {
-        if (user) {
-            navigate('/');
-        }
-    }, [user, navigate]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
+    try {
+      if (isLogin) {
+        await signIn(formData.email, formData.password);
+      } else {
+        // Validation
+        if (formData.password !== formData.confirmPassword)
+          throw new Error(t("auth.passwordsNotMatch"));
+        if (formData.password.length < 8)
+          throw new Error(t("auth.passwordTooShort"));
+        if (!formData.name.trim()) throw new Error(t("auth.nameRequired"));
+
+        await signUp(formData.email.trim().toLowerCase(), formData.password, {
+          name: formData.name.trim(),
+          phone: formData.phone.trim(),
         });
-    };
+      }
+    } catch (err) {
+      console.error("Auth Error:", err);
+      let msg = err.message;
+      if (msg.includes("credentials")) msg = t("auth.invalidCredentials");
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
-    
-        try {
-            if (isLogin) {
-                await signIn(formData.email, formData.password);
-            } else {
-                if (formData.password !== formData.confirmPassword) {
-                    throw new Error(t('auth.passwordsNotMatch'));
-                }
-                if (formData.password.length < 8) {
-                    throw new Error(t('auth.passwordTooShort'));
-                }
-                if (!formData.name.trim()) {
-                    throw new Error(t('auth.nameRequired'));
-                }
-                if (!formData.phone.trim()) {
-                    throw new Error(t('auth.phoneRequired'));
-                }
-                
-                const cleanEmail = formData.email.trim().toLowerCase();
-                console.log(  cleanEmail, 
-                    formData.password, 
-                    { 
-                        name: formData.name.trim(),
-                        phone: formData.phone.trim()
-                    });
-                await signUp(
-                    cleanEmail, 
-                    formData.password, 
-                    { 
-                        name: formData.name.trim(),
-                        phone: formData.phone.trim()
-                    }
-                );
-            }
-        } catch (err) {
-            console.error('Authentication error:', err);
-            let errorMessage = err.message;
-            
-            if (err.message.includes('credentials')) {
-                errorMessage = t('auth.invalidCredentials');
-            } else if (err.message.includes('already exists')) {
-                errorMessage = t('auth.userExists');
-            } else if (err.message.includes('Email not confirmed')) {
-                errorMessage = t('auth.emailNotVerified');
-            } else if (err.message.includes('valid email')) {
-                errorMessage = t('auth.invalidEmail');
-            }
-            
-            setError(errorMessage);
-            
-            if (!isLogin) {
-                setFormData(prev => ({
-                    ...prev,
-                    password: '',
-                    confirmPassword: ''
-                }));
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
+  // --- Animations ---
+  const backdropVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.8 } },
+  };
 
-    return (
-        <MotionDiv 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { type: "spring", stiffness: 100, damping: 20, delay: 0.2 },
+    },
+  };
+
+  const inputVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: (i) => ({
+      opacity: 1,
+      x: 0,
+      transition: { delay: 0.3 + i * 0.1 },
+    }),
+  };
+
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={backdropVariants}
+      className="min-h-screen w-full relative flex items-center justify-center overflow-hidden bg-[#0f172a]"
+    >
+      {/* 1. Background Image & Overlay */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070&auto=format&fit=crop"
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+        {/* Gradient Overlay for better text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/90 via-[#0f172a]/50 to-[#1e3a8a]/30 backdrop-blur-[2px]" />
+      </div>
+
+      {/* 2. Animated Floating Blobs (Background Effects) */}
+      <motion.div
+        animate={{
+          y: [0, -20, 0],
+          x: [0, 10, 0],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500/30 rounded-full blur-[100px] z-0"
+      />
+      <motion.div
+        animate={{
+          y: [0, 30, 0],
+          x: [0, -20, 0],
+          scale: [1, 1.2, 1],
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/20 rounded-full blur-[100px] z-0"
+      />
+
+      {/* 3. Glassmorphism Card */}
+      <motion.div
+        variants={cardVariants}
+        className="relative z-10 w-full max-w-[480px] mx-4 p-8 md:p-10 rounded-3xl border border-white/20 bg-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-xl"
+      >
+        {/* Logo & Header */}
+        <div className="text-center mb-8">
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center gap-2 mb-4 group"
+          >
+            <div className="p-3 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-400 shadow-lg group-hover:shadow-blue-500/50 transition-all duration-300">
+              <GiWashingMachine className="text-white text-3xl" />
+            </div>
+            <span className="text-3xl font-bold text-white tracking-tight">
+              Chicora
+            </span>
+          </Link>
+          <motion.h2
+            key={isLogin ? "login" : "signup"}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-semibold text-white/90"
+          >
+            {isLogin
+              ? t("auth.welcomeBack", "Welcome Back")
+              : t("auth.createAccount", "Create Account")}
+          </motion.h2>
+          <p className="text-blue-200/70 text-sm mt-2">
+            {isLogin
+              ? t(
+                  "auth.loginSubtitle",
+                  "Enter your details to access your account",
+                )
+              : t(
+                  "auth.signupSubtitle",
+                  "Get started with premium laundry services",
+                )}
+          </p>
+        </div>
+
+        {/* Error Message */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-6 p-3 rounded-lg bg-red-500/20 border border-red-500/50 flex items-center gap-3 overflow-hidden"
+            >
+              <div className="w-1 h-full bg-red-500 rounded-full" />
+              <p className="text-red-100 text-sm">{error}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <AnimatePresence mode="wait">
+            {!isLogin && (
+              <>
+                {/* Name Input */}
+                <motion.div
+                  custom={0}
+                  variants={inputVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                >
+                  <div className="relative group">
+                    <FaUser className="absolute left-0 top-3 text-blue-300/60 group-focus-within:text-blue-400 transition-colors" />
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder={t("auth.fullName")}
+                      value={formData.name}
+                      onChange={handleChange}
+                      required={!isLogin}
+                      className="w-full bg-transparent border-b border-white/20 py-2.5 pl-8 pr-3 text-white placeholder-blue-200/30 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Phone Input */}
+                <motion.div
+                  custom={1}
+                  variants={inputVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                >
+                  <div className="relative group">
+                    <FaPhone className="absolute left-0 top-3 text-blue-300/60 group-focus-within:text-blue-400 transition-colors" />
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder={t("auth.phoneNumber")}
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required={!isLogin}
+                      className="w-full bg-transparent border-b border-white/20 py-2.5 pl-8 pr-3 text-white placeholder-blue-200/30 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                    />
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+
+          {/* Email Input */}
+          <motion.div
+            custom={2}
+            variants={inputVariants}
             initial="hidden"
             animate="visible"
-            exit="exit"
-            variants={fadeIn}
-            className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex flex-col justify-center py-12 sm:px-6 lg:px-8"
-        >
-            <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="flex justify-center"
-                >
-                    <Link to="/" className="flex items-center space-x-2">
-                        <div className="relative">
-                            <div className="absolute -inset-1 bg-blue-200 rounded-full blur opacity-75 animate-pulse"></div>
-                            <div className="relative flex items-center justify-center h-12 w-12 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full shadow-lg">
-                                <GiWashingMachine className="text-white text-2xl" />
-                            </div>
-                        </div>
-                        <motion.span 
-                            className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400"
-                            whileHover={{ scale: 1.05 }}
-                        >
-                            DryClean Pro
-                        </motion.span>
-                    </Link>
-                </motion.div>
-
-                <MotionH1 
-                    variants={slideUp}
-                    className="mt-6 text-center text-3xl font-extrabold text-gray-900"
-                >
-                    {isLogin ? t('auth.signInTitle') : t('auth.signUpTitle')}
-                </MotionH1>
+          >
+            <div className="relative group">
+              <FaEnvelope className="absolute left-0 top-3 text-blue-300/60 group-focus-within:text-blue-400 transition-colors" />
+              <input
+                type="email"
+                name="email"
+                placeholder={t("auth.email")}
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full bg-transparent border-b border-white/20 py-2.5 pl-8 pr-3 text-white placeholder-blue-200/30 focus:outline-none focus:border-blue-400 transition-all duration-300"
+              />
             </div>
+          </motion.div>
 
-            <MotionDiv 
-                variants={slideUp}
-                className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
+          {/* Password Input */}
+          <motion.div
+            custom={3}
+            variants={inputVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <div className="relative group">
+              <FaLock className="absolute left-0 top-3 text-blue-300/60 group-focus-within:text-blue-400 transition-colors" />
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder={t("auth.password")}
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full bg-transparent border-b border-white/20 py-2.5 pl-8 pr-10 text-white placeholder-blue-200/30 focus:outline-none focus:border-blue-400 transition-all duration-300"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-0 top-3 text-blue-300/60 hover:text-white transition-colors"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Confirm Password (Signup only) */}
+          {!isLogin && (
+            <motion.div
+              custom={4}
+              variants={inputVariants}
+              initial="hidden"
+              animate="visible"
             >
-                <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="bg-white py-8 px-6 shadow-xl rounded-2xl sm:px-10 border border-blue-100"
-                >
-                    {error && (
-                        <motion.div 
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg"
-                        >
-                            <div className="flex items-center">
-                                <div className="flex-shrink-0">
-                                    <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                    </svg>
-                                </div>
-                                <div className="ml-3">
-                                    <p className="text-sm text-red-700">{error}</p>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
+              <div className="relative group">
+                <FaLock className="absolute left-0 top-3 text-blue-300/60 group-focus-within:text-blue-400 transition-colors" />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder={t("auth.confirmPassword")}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required={!isLogin}
+                  className="w-full bg-transparent border-b border-white/20 py-2.5 pl-8 pr-3 text-white placeholder-blue-200/30 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                />
+              </div>
+            </motion.div>
+          )}
 
-                    <form className="space-y-5" onSubmit={handleSubmit}>
-                        {!isLogin && (
-                            <>
-                                <motion.div
-                                    variants={formItemVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    transition={{ delay: 0.4 }}
-                                >
-                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                                        {t('auth.fullName')}
-                                    </label>
-                                    <div className="relative rounded-md shadow-sm">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <FaUser className="h-5 w-5 text-gray-400" />
-                                        </div>
-                                        <input
-                                            id="name"
-                                            name="name"
-                                            type="text"
-                                            required
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md shadow-sm placeholder-gray-400 sm:text-sm"
-                                            placeholder={t('auth.fullNamePlaceholder')}
-                                        />
-                                    </div>
-                                </motion.div>
+          {/* Remember Me & Forgot Password */}
+          {isLogin && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center justify-between text-sm"
+            >
+              <label className="flex items-center gap-2 text-blue-200/80 cursor-pointer hover:text-white transition-colors">
+                <input
+                  type="checkbox"
+                  className="rounded border-white/20 bg-transparent text-blue-500 focus:ring-offset-0 focus:ring-0"
+                />
+                {t("auth.rememberMe")}
+              </label>
+              <Link
+                to="/forgot-password"
+                className="text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                {t("auth.forgotPassword")}
+              </Link>
+            </motion.div>
+          )}
 
-                                <motion.div
-                                    variants={formItemVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    transition={{ delay: 0.45 }}
-                                >
-                                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                                        {t('auth.phoneNumber')}
-                                    </label>
-                                    <div className="relative rounded-md shadow-sm">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <FaPhone className="h-5 w-5 text-gray-400" />
-                                        </div>
-                                        <input
-                                            id="phone"
-                                            name="phone"
-                                            type="tel"
-                                            required
-                                            value={formData.phone}
-                                            onChange={handleChange}
-                                            className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md shadow-sm placeholder-gray-400 sm:text-sm"
-                                            placeholder={t('auth.phonePlaceholder')}
-                                        />
-                                    </div>
-                                </motion.div>
-                            </>
-                        )}
+          {/* Submit Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            disabled={loading}
+            className={`w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold shadow-lg hover:shadow-blue-500/40 transition-all duration-300 flex items-center justify-center gap-2 ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+          >
+            {loading ? (
+              <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <>
+                {isLogin ? t("auth.signIn") : t("auth.signUp")}
+                <ChevronRight size={18} />
+              </>
+            )}
+          </motion.button>
+        </form>
 
-                        <motion.div
-                            variants={formItemVariants}
-                            initial="hidden"
-                            animate="visible"
-                            transition={{ delay: isLogin ? 0.4 : 0.5 }}
-                        >
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                {t('auth.email')}
-                            </label>
-                            <div className="relative rounded-md shadow-sm">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FaEnvelope className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="email"
-                                    required
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md shadow-sm placeholder-gray-400 sm:text-sm"
-                                    placeholder={t('auth.emailPlaceholder')}
-                                />
-                            </div>
-                        </motion.div>
+        {/* Divider */}
+        <div className="my-6 flex items-center gap-4">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <span className="text-white/40 text-sm font-medium">
+            {t("auth.or")}
+          </span>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        </div>
 
-                        <motion.div
-                            variants={formItemVariants}
-                            initial="hidden"
-                            animate="visible"
-                            transition={{ delay: isLogin ? 0.5 : 0.6 }}
-                        >
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                                {t('auth.password')}
-                            </label>
-                            <div className="relative rounded-md shadow-sm">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FaLock className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    autoComplete={isLogin ? "current-password" : "new-password"}
-                                    required
-                                    minLength="8"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md shadow-sm placeholder-gray-400 sm:text-sm"
-                                    placeholder={isLogin ? t('auth.passwordPlaceholder') : t('auth.newPasswordPlaceholder')}
-                                />
-                            </div>
-                            {!isLogin && (
-                                <p className="mt-1 text-xs text-gray-500">
-                                    {t('auth.passwordRequirements')}
-                                </p>
-                            )}
-                        </motion.div>
+        {/* Social Login */}
+        <div className="grid grid-cols-1 gap-4">
+          <motion.button
+            onClick={handleGoogleLogin}
+            whileHover={{ y: -2, backgroundColor: "rgba(255,255,255,0.15)" }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-white/10 border border-white/10 backdrop-blur-sm transition-all text-white hover:border-white/30"
+          >
+            <FaGoogle className="text-red-400" />
+            <span className="text-sm font-medium">Google</span>
+          </motion.button>
+        </div>
 
-                        {!isLogin && (
-                            <motion.div
-                                variants={formItemVariants}
-                                initial="hidden"
-                                animate="visible"
-                                transition={{ delay: 0.7 }}
-                            >
-                                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                                    {t('auth.confirmPassword')}
-                                </label>
-                                <div className="relative rounded-md shadow-sm">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <FaLock className="h-5 w-5 text-gray-400" />
-                                    </div>
-                                    <input
-                                        id="confirmPassword"
-                                        name="confirmPassword"
-                                        type="password"
-                                        autoComplete="new-password"
-                                        required
-                                        minLength="8"
-                                        value={formData.confirmPassword}
-                                        onChange={handleChange}
-                                        className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-3 py-3 border-gray-300 rounded-md shadow-sm placeholder-gray-400 sm:text-sm"
-                                        placeholder={t('auth.confirmPasswordPlaceholder')}
-                                    />
-                                </div>
-                            </motion.div>
-                        )}
+        {/* Switch Mode */}
+        <div className="mt-8 text-center">
+          <p className="text-blue-200/60 text-sm">
+            {isLogin
+              ? t("auth.needAccount", "Don't have an account?")
+              : t("auth.haveAccount", "Already have an account?")}
+            <button
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError("");
+              }}
+              className="ml-2 text-white font-semibold hover:text-blue-400 underline underline-offset-4 transition-colors"
+            >
+              {isLogin
+                ? t("auth.signUp", "Sign Up")
+                : t("auth.signIn", "Sign In")}
+            </button>
+          </p>
+        </div>
+      </motion.div>
 
-                        {isLogin && (
-                            <motion.div 
-                                className="flex items-center justify-between"
-                                variants={formItemVariants}
-                                initial="hidden"
-                                animate="visible"
-                                transition={{ delay: 0.6 }}
-                            >
-                                <div className="flex items-center">
-                                    <input
-                                        id="remember-me"
-                                        name="remember-me"
-                                        type="checkbox"
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                                        {t('auth.rememberMe')}
-                                    </label>
-                                </div>
-
-                                <div className="text-sm">
-                                    <Link 
-                                        to="/forgot-password" 
-                                        className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
-                                    >
-                                        {t('auth.forgotPassword')}
-                                    </Link>
-                                </div>
-                            </motion.div>
-                        )}
-
-                        <motion.div
-                            variants={formItemVariants}
-                            initial="hidden"
-                            animate="visible"
-                            transition={{ delay: isLogin ? 0.7 : 0.9 }}
-                        >
-                            <motion.button
-                                type="submit"
-                                disabled={loading}
-                                whileHover={!loading ? { scale: 1.02 } : {}}
-                                whileTap={!loading ? { scale: 0.98 } : {}}
-                                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
-                            >
-                                {loading ? (
-                                    <span className="flex items-center">
-                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        {t('auth.processing')}
-                                    </span>
-                                ) : (
-                                    <span className="flex items-center">
-                                        {isLogin ? (
-                                            <>
-                                                <FaSignInAlt className="mr-2" />
-                                                {t('auth.signIn')}
-                                            </>
-                                        ) : (
-                                            <>
-                                                <FaUser className="mr-2" />
-                                                {t('auth.signUp')}
-                                            </>
-                                        )}
-                                    </span>
-                                )}
-                            </motion.button>
-                        </motion.div>
-                    </form>
-
-                    <motion.div 
-                        className="mt-6"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1 }}
-                    >
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-300"></div>
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white text-gray-500">
-                                    {t('auth.or')}
-                                </span>
-                            </div>
-                        </div>
-
-                        <motion.div 
-                            className="mt-6"
-                            variants={switchButtonVariants}
-                            whileHover="hover"
-                            whileTap="tap"
-                        >
-                            <button
-                                onClick={() => {
-                                    setIsLogin(!isLogin);
-                                    setError('');
-                                }}
-                                className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
-                            >
-                                {isLogin ? t('auth.needAccount') : t('auth.haveAccount')}
-                            </button>
-                        </motion.div>
-                    </motion.div>
-                </motion.div>
-            </MotionDiv>
-        </MotionDiv>
-    );
+      {/* Footer Text */}
+      <div className="absolute bottom-4 text-center w-full z-10">
+        <p className="text-white/20 text-xs flex items-center justify-center gap-1">
+          <Sparkles size={10} /> Powered by Chicora Systems
+        </p>
+      </div>
+    </motion.div>
+  );
 };
 
 export default Auth;

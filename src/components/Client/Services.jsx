@@ -25,8 +25,8 @@ const Services = () => {
             (service.description &&
               service.description
                 .toLowerCase()
-                .includes(searchTerm.toLowerCase()))
-        )
+                .includes(searchTerm.toLowerCase())),
+        ),
       );
     }
   }, [services, searchTerm]);
@@ -122,7 +122,8 @@ const Services = () => {
       >
         {filteredServices.map((service) => (
           <motion.div
-            key={service.$id}
+            // FIX: Changed service.$id to service.id (Supabase syntax)
+            key={service.id}
             variants={itemVariants}
             whileHover={{
               y: -5,
@@ -172,7 +173,8 @@ const Services = () => {
                 </span>
                 {user ? (
                   <Link
-                    to={`/order?service=${service.$id}`}
+                    // FIX: Changed service.$id to service.id
+                    to={`/order?service=${service.id}`}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center"
                   >
                     <svg
@@ -223,6 +225,7 @@ const Services = () => {
           animate={{ opacity: 1 }}
           className="text-center py-16"
         >
+          {/* ... (No changes needed in empty state) ... */}
           <div className="inline-block p-6 bg-blue-50 rounded-full mb-4">
             <svg
               className="h-10 w-10 text-blue-500"

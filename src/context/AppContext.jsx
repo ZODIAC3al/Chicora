@@ -12,7 +12,6 @@ import {
   supabase,
   getPublicServices,
   getServices,
-  createOrder as createSupabaseOrder,
   getOrders as getSupabaseOrders,
   getAllUsers as getSupabaseAllUsers,
   updateUserProfile,
@@ -37,7 +36,7 @@ export const MotionH1 = motion.h1;
 export const MotionP = motion.p;
 
 export const AppProvider = ({ children }) => {
-  const { user, loading: authLoading, profile, checkSession } = useAuth(); // Changed from refreshSession to checkSession
+  const { user, loading: authLoading, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -53,9 +52,10 @@ export const AppProvider = ({ children }) => {
     document.documentElement.dir = lng === "ar" ? "rtl" : "ltr";
   }, []);
 
-  const fetchPublicServices = useCallback(async () => {
+  // MODIFIED: Accepts showLoading parameter
+  const fetchPublicServices = useCallback(async (showLoading = true) => {
     try {
-      setLoading(true);
+      if (showLoading) setLoading(true);
       const { services: fetchedServices, error } = await getPublicServices();
       if (error) throw error;
       setServices(fetchedServices || []);
@@ -66,13 +66,14 @@ export const AppProvider = ({ children }) => {
         { id: "2", name: "Premium Service", price: 200, is_active: true },
       ]);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   }, []);
 
-  const fetchServices = useCallback(async () => {
+  // MODIFIED: Accepts showLoading parameter
+  const fetchServices = useCallback(async (showLoading = true) => {
     try {
-      setLoading(true);
+      if (showLoading) setLoading(true);
       const { services: fetchedServices, error } = await getServices();
       if (error) throw error;
       setServices(fetchedServices || []);
@@ -80,25 +81,30 @@ export const AppProvider = ({ children }) => {
       console.error("Failed to fetch services:", error);
       throw error;
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   }, []);
 
-  const fetchOrders = useCallback(async () => {
-    try {
-      if (!user) return;
-
-      setLoading(true);
-      const { orders: fetchedOrders, error } = await getSupabaseOrders(user.id);
-      if (error) throw error;
-      setOrders(fetchedOrders || []);
-    } catch (error) {
-      console.error("Failed to fetch orders:", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+  // MODIFIED: Accepts showLoading parameter
+  const fetchOrders = useCallback(
+    async (showLoading = true) => {
+      try {
+        if (!user) return;
+        if (showLoading) setLoading(true);
+        const { orders: fetchedOrders, error } = await getSupabaseOrders(
+          user.id,
+        );
+        if (error) throw error;
+        setOrders(fetchedOrders || []);
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+        throw error;
+      } finally {
+        if (showLoading) setLoading(false);
+      }
+    },
+    [user],
+  );
 
   const createOrder = useCallback(
     async (orderData) => {
@@ -120,7 +126,8 @@ export const AppProvider = ({ children }) => {
           .single();
 
         if (error) throw error;
-        await fetchOrders();
+        // Silent refresh after creation
+        await fetchOrders(false);
         return data;
       } catch (error) {
         console.error("Failed to create order:", error);
@@ -129,24 +136,27 @@ export const AppProvider = ({ children }) => {
         setLoading(false);
       }
     },
-    [user, fetchOrders]
+    [user, fetchOrders],
   );
 
-  const fetchAllUsers = useCallback(async () => {
-    try {
-      if (!user || profile?.role !== "admin") return;
-
-      setLoading(true);
-      const { users: fetchedUsers, error } = await getSupabaseAllUsers();
-      if (error) throw error;
-      setUsers(fetchedUsers || []);
-    } catch (error) {
-      console.error("Failed to fetch users:", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [user, profile]);
+  // MODIFIED: Accepts showLoading parameter
+  const fetchAllUsers = useCallback(
+    async (showLoading = true) => {
+      try {
+        if (!user || profile?.role !== "admin") return;
+        if (showLoading) setLoading(true);
+        const { users: fetchedUsers, error } = await getSupabaseAllUsers();
+        if (error) throw error;
+        setUsers(fetchedUsers || []);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+        throw error;
+      } finally {
+        if (showLoading) setLoading(false);
+      }
+    },
+    [user, profile],
+  );
 
   const updateProfile = useCallback(
     async (updates) => {
@@ -157,10 +167,9 @@ export const AppProvider = ({ children }) => {
         setLoading(true);
         const { user: updatedUser, error } = await updateUserProfile(
           user.id,
-          updates
+          updates,
         );
         if (error) throw error;
-
         return updatedUser;
       } catch (error) {
         console.error("Failed to update profile:", error);
@@ -169,54 +178,40 @@ export const AppProvider = ({ children }) => {
         setLoading(false);
       }
     },
-    [user]
+    [user],
   );
 
+  // MODIFIED: Now passes 'false' to fetch functions
   const refreshData = useCallback(async () => {
     if (user) {
       await Promise.all([
-        fetchServices(),
-        fetchOrders(),
-        profile?.role === "admin" ? fetchAllUsers() : Promise.resolve(),
+        fetchServices(false), // Silent
+        fetchOrders(false), // Silent
+        profile?.role === "admin" ? fetchAllUsers(false) : Promise.resolve(), // Silent
       ]);
     } else {
-      await fetchPublicServices();
+      await fetchPublicServices(false); // Silent
     }
-  }, [user, profile, fetchServices, fetchOrders, fetchAllUsers, fetchPublicServices]);
+  }, [
+    user,
+    profile,
+    fetchServices,
+    fetchOrders,
+    fetchAllUsers,
+    fetchPublicServices,
+  ]);
 
   useEffect(() => {
     changeLanguage("en");
-    fetchPublicServices();
+    // Initial load - show spinner
+    fetchPublicServices(true);
   }, [changeLanguage, fetchPublicServices]);
 
   useEffect(() => {
+    // This runs on tab focus because 'user' ref changes.
+    // But since refreshData now uses silent mode, NO SPINNER will appear.
     refreshData();
   }, [user, profile, refreshData]);
-
-  useEffect(() => {
-    const handleVisibilityChange = async () => {
-      if (document.visibilityState === "visible") {
-        try {
-          // First check the session
-          await checkSession?.();
-          
-          // Then refresh data if needed
-          await refreshData();
-        } catch (error) {
-          console.error("Error during visibility change handling:", error);
-          // Fallback to full page reload if session check fails
-          if (error.message.includes("Session expired") || error.message.includes("Invalid token")) {
-            window.location.reload();
-          }
-        }
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [checkSession, refreshData]);
 
   const value = useMemo(
     () => ({
@@ -257,7 +252,7 @@ export const AppProvider = ({ children }) => {
       fetchAllUsers,
       fetchServices,
       updateProfile,
-    ]
+    ],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

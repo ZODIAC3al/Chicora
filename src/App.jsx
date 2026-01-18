@@ -11,19 +11,22 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/Shared/Navbar";
 import Loading from "./components/Shared/Loading";
 import Auth from "./components/Shared/Auth";
-import Services from "./components/Client/Services";
-import OrderForm from "./components/Client/OrderForm";
-import OrderHistory from "./components/Client/OrderHistory";
+import Services from "./components/Client/Services/index";
+import OrderForm from "./components/Client/OrderForm/index";
+import OrderHistory from "./components/Client/OrderHistory/index";
 
 import Orders from "./components/Admin/Orders";
-import Dashboard from "./components/Admin/Dashboard";
-import Home from "./components/Client/Home";
+// --- UPDATED IMPORT PATH BELOW ---
+import Dashboard from "./components/Admin/dashboard/index";
+// ---------------------------------
+
+import Home from "./components/Client/Home/index";
 import Footer from "./components/Shared/Footer";
 import AboutPage from "./components/Shared/AboutPage";
 import ContactPage from "./components/Shared/ContactPage ";
 import PricingPage from "./components/Shared/PricingPage";
-import ProfilePage from "./components/Client/ProfilePage";
-import InstallPWA from "./components/Shared/InstallPWA"; // <--- Added Import
+import ProfilePage from "./components/Client/Profile/index";
+import InstallPWA from "./components/Shared/InstallPWA";
 
 // Enhanced ProtectedRoute with AuthContext
 const ProtectedRoute = ({ children, roles = [] }) => {

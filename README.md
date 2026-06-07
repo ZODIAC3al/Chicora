@@ -13,10 +13,9 @@ A contemporary web application built with cutting-edge technologies, Chicora sho
 
 ## 🚀 Tech Stack
 
-- **Frontend**: React/Vue/Angular
+- **Frontend**: React
 - **Styling**: CSS3, SASS, or Tailwind CSS
 - **State Management**: Redux, Vuex, or Context API
-- **Build Tool**: Webpack, Vite, or Angular CLI
 - **Testing**: Jest, React Testing Library
 - **API Communication**: Axios or Fetch
 
